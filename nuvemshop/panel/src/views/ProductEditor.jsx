@@ -6,6 +6,7 @@ import { Toggle, Spinner } from '../components/primitives.jsx'
 import Dropzone from '../components/Dropzone.jsx'
 import { ColorField, emptySettings } from '../settings.jsx'
 import BlockCard from './BlockCard.jsx'
+import BlockPickerModal from './BlockPickerModal.jsx'
 
 const emptyFor = (f) =>
   f.type === 'items' ? [] : f.type === 'toggle' ? f.default ?? false : f.type === 'number' ? f.default ?? 0 : ''
@@ -32,7 +33,7 @@ function hydrateUids(config) {
   }
 }
 
-export default function ProductEditor({ product, picker }) {
+export default function ProductEditor({ product }) {
   const [config, setConfig] = useState(null)
   const [blockTypes, setBlockTypes] = useState([])
   const [loadErr, setLoadErr] = useState('')
@@ -129,22 +130,12 @@ export default function ProductEditor({ product, picker }) {
       {/* Blocos */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '22px 0 12px' }}>
         <h3 className="sw-h3" style={{ margin: 0 }}>Blocos ({config.blocks.length})</h3>
-        <button onClick={() => (picker ? picker.open(blockTypes, addBlock) : setPicking((p) => !p))} className="sw-btn sw-btn--soft" data-testid="add-block">
+        <button onClick={() => setPicking(true)} className="sw-btn sw-btn--soft" data-testid="add-block">
           Adicionar novo bloco
         </button>
       </div>
 
-      {picking && !picker && (
-        <div className="sw-card" style={{ background: 'var(--surface)' }}>
-          <div className="sw-meta" style={{ marginBottom: 10 }}>Escolha o componente:</div>
-          {blockTypes.map((t) => (
-            <button key={t.type} onClick={() => addBlock(t)} className="sw-row">
-              <span className="sw-row__title">{t.label}</span>
-              <span className="sw-row__action">adicionar +</span>
-            </button>
-          ))}
-        </div>
-      )}
+      {picking && <BlockPickerModal blockTypes={blockTypes} onAdd={addBlock} onClose={() => setPicking(false)} />}
 
       <SortableList ids={config.blocks.map((b) => b.id)} onReorder={reorderBlocks}>
         {config.blocks.map((b) => {
