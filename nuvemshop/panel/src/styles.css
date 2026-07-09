@@ -182,6 +182,7 @@ button, input, select, textarea { font-family: inherit; }
   padding: 11px 14px; transition: border-color 0.15s;
 }
 .sw-input::placeholder { color: var(--subtle); }
+.sw-input--pill { border-radius: var(--r-pill); padding: 13px 22px; }
 .sw-input:focus, .sw-select:focus { outline: none; border-color: var(--brand); }
 textarea.sw-input { resize: vertical; min-height: 72px; line-height: 1.5; }
 

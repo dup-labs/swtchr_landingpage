@@ -58,7 +58,7 @@ export default function ProductList({ onOpen }) {
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
         <input
           ref={inputRef}
-          className="sw-input"
+          className="sw-input sw-input--pill"
           style={{ flex: '1 1 260px' }}
           value={q}
           onChange={(e) => setQ(e.target.value)}
