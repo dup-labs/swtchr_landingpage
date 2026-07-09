@@ -5,6 +5,7 @@ import { C, styles, RichText, ImageUploader } from './ui.jsx'
 import { SortableList, SortableItem, DragHandle, arrayMove, uid } from './dnd.jsx'
 import { SettingsEditor, emptySettings } from './settings.jsx'
 import Sidebar, { SECTIONS } from './views/Sidebar.jsx'
+import ProductList from './views/ProductList.jsx'
 
 const emptyFor = (f) =>
   f.type === 'items' ? [] : f.type === 'toggle' ? f.default ?? false : f.type === 'number' ? f.default ?? 0 : ''
@@ -70,102 +71,15 @@ function ComingSoon({ label }) {
 
 // ---------- aba Produto ----------
 function ProductTab() {
-  const [view, setView] = useState('list') // list | edit
   const [product, setProduct] = useState(null) // {id, name}
 
-  if (view === 'list') {
-    return (
-      <HistoryList
-        onAdd={() => {
-          setProduct(null)
-          setView('edit')
-        }}
-        onOpen={(p) => {
-          setProduct(p)
-          setView('edit')
-        }}
-      />
-    )
-  }
-  return (
-    <Editor
-      product={product}
-      onPick={setProduct}
-      onBack={() => {
-        setProduct(null)
-        setView('list')
-      }}
-    />
-  )
-}
-
-function HistoryList({ onAdd, onOpen }) {
-  const [rows, setRows] = useState(null)
-  const [err, setErr] = useState('')
-  useEffect(() => {
-    api.history().then(setRows).catch((e) => setErr(e.message))
-  }, [])
+  if (!product) return <ProductList onOpen={setProduct} />
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-        <h2 style={{ margin: 0, fontSize: 20 }}>Produtos editados</h2>
-        <button onClick={onAdd} style={styles.primary}>+ Adicionar novo</button>
-      </div>
-      {err && <div style={{ color: '#c0392b' }}>{err}</div>}
-      {rows === null && !err && <div style={{ color: C.muted }}>carregando…</div>}
-      {rows && rows.length === 0 && <div style={{ color: C.muted, padding: '40px 0', textAlign: 'center' }}>Nenhum produto editado ainda. Clica em “Adicionar novo”.</div>}
-      {rows && rows.map((p) => (
-        <button key={p.id} onClick={() => onOpen(p)} style={{ ...rowStyle }}>
-          <span>{p.name}</span>
-          <span style={{ color: C.muted, fontSize: 12 }}>#{p.id} · editar →</span>
-        </button>
-      ))}
-    </div>
-  )
-}
-
-function Editor({ product, onPick, onBack }) {
-  return (
-    <div>
-      <button onClick={onBack} style={{ ...styles.linkBtn, marginBottom: 12 }}>← voltar</button>
-      {!product ? <ProductSearch onPick={onPick} /> : <Builder product={product} />}
-    </div>
-  )
-}
-
-function ProductSearch({ onPick }) {
-  const [q, setQ] = useState('')
-  const [rows, setRows] = useState([])
-  const [busy, setBusy] = useState(false)
-  useEffect(() => {
-    const t = setTimeout(async () => {
-      if (!q.trim()) {
-        setRows([])
-        return
-      }
-      setBusy(true)
-      try {
-        setRows(await api.search(q))
-      } catch {
-        setRows([])
-      }
-      setBusy(false)
-    }, 300)
-    return () => clearTimeout(t)
-  }, [q])
-  return (
-    <div>
-      <h2 style={{ marginTop: 0, fontSize: 20 }}>Buscar produto</h2>
-      <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="nome ou id do produto" style={styles.input} />
-      <div style={{ marginTop: 10 }}>
-        {busy && <div style={{ color: C.muted }}>buscando…</div>}
-        {rows.map((p) => (
-          <button key={p.id} onClick={() => onPick(p)} style={rowStyle}>
-            <span>{p.name}</span>
-            <span style={{ color: C.muted, fontSize: 12 }}>#{p.id}</span>
-          </button>
-        ))}
-      </div>
+      <button onClick={() => setProduct(null)} className="sw-btn sw-btn--link" style={{ marginBottom: 14 }} data-testid="back">
+        ← voltar
+      </button>
+      <Builder product={product} />
     </div>
   )
 }
