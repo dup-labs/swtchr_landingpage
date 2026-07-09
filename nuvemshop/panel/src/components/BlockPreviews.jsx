@@ -98,6 +98,62 @@ const ART = {
   ),
 }
 
+ART.feature_list = (
+  <>
+    <rect x="4" y="4" width="112" height="64" rx="4" fill="#2A2E39" />
+    <rect x="12" y="12" width="52" height="6" rx="2" fill={W} />
+    {[26, 40, 54].map((y, i) => (
+      <g key={y}>
+        <circle cx="16" cy={y + 3} r="2.5" fill={B} />
+        <rect x="24" y={y} width="34" height="3" rx="1.5" fill={W} opacity="0.85" />
+        <rect x="24" y={y + 6} width="44" height="2.5" rx="1" fill={W} opacity="0.4" />
+      </g>
+    ))}
+    <rect x="76" y="14" width="34" height="46" rx="3" fill={SU} opacity="0.5" />
+  </>
+)
+
+ART.ficha_cuidados = (
+  <>
+    <rect x="4" y="4" width="112" height="64" rx="4" fill="#EFEDE6" />
+    {[16, 26, 36, 46].map((y) => (
+      <g key={y}>
+        <rect x="12" y={y} width="16" height="3" rx="1.5" fill={SU} />
+        <rect x="31" y={y} width="22" height="3" rx="1.5" fill={L} />
+      </g>
+    ))}
+    <rect x="60" y="14" width="20" height="42" rx="3" fill={S} opacity="0.7" />
+    {[
+      [90, 22], [104, 22], [90, 44], [104, 44],
+    ].map(([x, y]) => (
+      <g key={x + '-' + y}>
+        <rect x={x - 5} y={y - 5} width="10" height="9" rx="2" fill="none" stroke={SU} strokeWidth="1.4" />
+        <rect x={x - 3.5} y={y + 7} width="7" height="2" rx="1" fill={B} />
+      </g>
+    ))}
+  </>
+)
+
+ART.reviews = (
+  <>
+    <rect x="10" y="8" width="44" height="7" rx="2" fill={SU} />
+    {[0, 1, 2, 3, 4].map((i) => (
+      <circle key={i} cx={92 + i * 6} cy="11" r="2.2" fill={B} />
+    ))}
+    {[10, 48, 86].map((x) => (
+      <g key={x}>
+        <rect x={x} y="22" width="24" height="40" rx="3" fill={W} stroke={L} strokeWidth="1" />
+        {[0, 1, 2].map((i) => (
+          <circle key={i} cx={x + 5 + i * 5} cy="28" r="1.6" fill={B} />
+        ))}
+        <rect x={x + 4} y="34" width="16" height="2.5" rx="1" fill={L} />
+        <rect x={x + 4} y="39" width="14" height="2.5" rx="1" fill={L} />
+        <rect x={x + 4} y="47" width="10" height="2.5" rx="1" fill={SU} />
+      </g>
+    ))}
+  </>
+)
+
 const FALLBACK = (
   <>
     <rect x="14" y="14" width="92" height="30" rx="3" fill={L} />
