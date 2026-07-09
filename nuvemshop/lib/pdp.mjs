@@ -208,7 +208,7 @@ export const BLOCK_TYPES = {
 
 // ---------- config: normalização + validação ----------
 export function emptyConfig() {
-  return { banner: { desktop: '', mobile: '', text: '' }, blocks: [] }
+  return { banner: { desktop: '', mobile: '', link: '', text: '', textEnabled: true, bg: '', color: '' }, blocks: [] }
 }
 
 // limpa os campos de um bloco conforme os tipos declarados no registry
@@ -264,7 +264,12 @@ export function normalizeConfig(raw) {
     banner: {
       desktop: isHttpUrl(b.desktop) ? b.desktop : '',
       mobile: isHttpUrl(b.mobile) ? b.mobile : '',
+      link: cleanUrl(b.link),
       text: sanitizeRich(typeof b.text === 'string' ? b.text : ''),
+      // default true = retrocompat: config antigo sem o campo continua exibindo o texto
+      textEnabled: cleanBool(b.textEnabled, true),
+      bg: cleanHex(b.bg),
+      color: cleanHex(b.color),
     },
     blocks: blocks
       .filter((x) => x && BLOCK_TYPES[x.type])
@@ -292,7 +297,10 @@ export function validateConfig(config) {
 export function renderBanner(banner) {
   const d = isHttpUrl(banner.desktop) ? banner.desktop : ''
   const m = isHttpUrl(banner.mobile) ? banner.mobile : ''
-  const text = sanitizeRich(banner.text)
+  const link = cleanUrl(banner.link)
+  const text = banner.textEnabled === false ? '' : sanitizeRich(banner.text)
+  const bg = cleanHex(banner.bg)
+  const color = cleanHex(banner.color)
   if (!d && !m && !text) return ''
   let picture = ''
   if (d || m) {
@@ -301,8 +309,12 @@ export function renderBanner(banner) {
       (m ? `<source media="(max-width: 640px)" srcset="${escapeAttr(m)}">` : '') +
       `<img src="${escapeAttr(d || m)}" alt="" loading="eager">` +
       `</picture>`
+    if (link) picture = `<a class="swtchr-banner__link" href="${escapeAttr(link)}">${picture}</a>`
   }
-  return `<section class="swtchr-block swtchr-banner">${picture}${text ? `<div class="swtchr-banner__text">${text}</div>` : ''}</section>`
+  // bg/color só entram no style depois do cleanHex (formato #rgb/#rrggbb garantido)
+  const css = (bg ? `background:${bg};` : '') + (color ? `color:${color};` : '')
+  const styleAttr = css ? ` style="${css}"` : ''
+  return `<section class="swtchr-block swtchr-banner"${styleAttr}>${picture}${text ? `<div class="swtchr-banner__text">${text}</div>` : ''}</section>`
 }
 
 export function renderPdpHtml(config) {
