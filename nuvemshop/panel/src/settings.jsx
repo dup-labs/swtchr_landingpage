@@ -1,99 +1,97 @@
 import React, { useState } from 'react'
-import { C, styles } from './ui.jsx'
+import { Segmented } from './components/primitives.jsx'
 
 const emptySide = () => ({ t: '', r: '', b: '', l: '' })
 const emptyStyle = () => ({ bg: '', color: '', margin: emptySide(), padding: emptySide(), container: 'full' })
 export const emptySettings = () => ({ desktop: emptyStyle(), mobile: emptyStyle() })
 
 // Cor: color picker + campo hex (sincronizados). Vazio = herda.
-function ColorField({ label, value, onChange }) {
+export function ColorField({ label, value, onChange }) {
+  const valid = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value || '')
   return (
-    <div style={{ marginBottom: 12 }}>
-      <label style={styles.label}>{label}</label>
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <input
-          type="color"
-          value={/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value || '') ? value : '#000000'}
-          onChange={(e) => onChange(e.target.value)}
-          style={{ width: 42, height: 32, border: `1px solid ${C.line}`, borderRadius: 6, padding: 0, background: 'none', cursor: 'pointer' }}
-        />
-        <input type="text" value={value} placeholder="#rrggbb (vazio = herda)" onChange={(e) => onChange(e.target.value)} style={{ ...styles.input, flex: 1 }} />
-        {value ? <button type="button" onClick={() => onChange('')} style={styles.linkBtn}>limpar</button> : null}
+    <div style={{ marginBottom: 6 }}>
+      <label className="sw-label">{label}</label>
+      <div className="sw-color">
+        <input type="color" value={valid ? value : '#ffffff'} onChange={(e) => onChange(e.target.value)} />
+        <input type="text" className="sw-input" style={{ flex: 1 }} value={value} placeholder="#rrggbb (vazio = herda)" onChange={(e) => onChange(e.target.value)} />
+        {value ? (
+          <button type="button" className="sw-btn sw-btn--link" onClick={() => onChange('')}>
+            limpar
+          </button>
+        ) : null}
       </div>
     </div>
   )
 }
 
-// Espaçamento nos 4 lados (layout em cruz: topo / esq-dir / base)
-function SpacingField({ label, value, onChange }) {
-  const v = value || emptySide()
-  const box = (side) => (
+// margin/padding em cruz — boxes aninhados como no desenho do Figma
+function SpacingCross({ margin, padding, onChange }) {
+  const m = margin || emptySide()
+  const p = padding || emptySide()
+  const box = (obj, key, side) => (
     <input
       type="number"
-      value={v[side]}
+      value={obj[side]}
       placeholder="0"
-      onChange={(e) => onChange({ ...v, [side]: e.target.value })}
-      style={{ width: 54, fontFamily: 'inherit', fontSize: 13, textAlign: 'center', border: `1px solid ${C.line}`, borderRadius: 6, padding: '5px 4px' }}
+      aria-label={`${key} ${side}`}
+      onChange={(e) => onChange(key, { ...obj, [side]: e.target.value })}
     />
   )
   return (
-    <div style={{ marginBottom: 12 }}>
-      <label style={styles.label}>{label}</label>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-        {box('t')}
-        <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>{box('l')}{box('r')}</div>
-        {box('b')}
+    <div className="sw-spacing">
+      <div className="sw-spacing__tag">Margin</div>
+      <div className="sw-spacing__grid">
+        {box(m, 'margin', 't')}
+        <div className="sw-spacing__mid">
+          {box(m, 'margin', 'l')}
+          <div className="sw-spacing sw-spacing--inner" style={{ flex: 1 }}>
+            <div className="sw-spacing__tag">Padding</div>
+            <div className="sw-spacing__grid">
+              {box(p, 'padding', 't')}
+              <div className="sw-spacing__mid">
+                {box(p, 'padding', 'l')}
+                <div className="sw-spacing__core" />
+                {box(p, 'padding', 'r')}
+              </div>
+              {box(p, 'padding', 'b')}
+            </div>
+          </div>
+          {box(m, 'margin', 'r')}
+        </div>
+        {box(m, 'margin', 'b')}
       </div>
     </div>
   )
 }
 
-function StyleFields({ style, onChange }) {
-  const s = style || emptyStyle()
-  return (
-    <div>
-      <ColorField label="Cor de fundo" value={s.bg} onChange={(v) => onChange({ bg: v })} />
-      <ColorField label="Cor do texto" value={s.color} onChange={(v) => onChange({ color: v })} />
-      <SpacingField label="Margin (px)" value={s.margin} onChange={(v) => onChange({ margin: v })} />
-      <SpacingField label="Padding (px)" value={s.padding} onChange={(v) => onChange({ padding: v })} />
-      <label style={styles.label}>Container</label>
-      <select value={s.container} onChange={(e) => onChange({ container: e.target.value })} style={styles.input}>
-        <option value="full">100% (largura total)</option>
-        <option value="grid">Grid (centralizado, máx 1100px)</option>
-      </select>
-    </div>
-  )
-}
-
-// accordion desktop/mobile (um aberto por vez)
+// settings por bloco: segmented Desktop/Mobile (mesmo schema de antes)
 export function SettingsEditor({ settings, onChange }) {
   const s = settings || emptySettings()
-  const [open, setOpen] = useState('desktop')
-  const setStyle = (which, patch) => onChange({ ...s, [which]: { ...s[which], ...patch } })
-  const section = (key, label) => {
-    const isOpen = open === key
-    return (
-      <div style={{ border: `1px solid ${C.line}`, borderRadius: 8, marginBottom: 8, overflow: 'hidden' }}>
-        <button
-          type="button"
-          onClick={() => setOpen(isOpen ? '' : key)}
-          style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, background: C.surface, border: 'none', cursor: 'pointer', fontFamily: 'inherit', padding: '9px 12px', color: C.ink }}
-        >
-          <span style={{ color: C.muted, fontSize: 10, transform: isOpen ? 'rotate(90deg)' : 'none', display: 'inline-block' }}>▶</span>
-          <strong style={{ fontSize: 12 }}>{label}</strong>
-        </button>
-        {isOpen && (
-          <div style={{ padding: 12 }}>
-            <StyleFields style={s[key]} onChange={(patch) => setStyle(key, patch)} />
-          </div>
-        )}
-      </div>
-    )
-  }
+  const [which, setWhich] = useState('desktop')
+  const st = s[which] || emptyStyle()
+  const patch = (partial) => onChange({ ...s, [which]: { ...st, ...partial } })
   return (
-    <div style={{ marginTop: 8 }}>
-      {section('desktop', '🖥 Desktop')}
-      {section('mobile', '📱 Mobile')}
+    <div style={{ marginTop: 12 }}>
+      <Segmented
+        options={[
+          { value: 'desktop', label: 'Desktop' },
+          { value: 'mobile', label: 'Mobile' },
+        ]}
+        value={which}
+        onChange={setWhich}
+      />
+      <div className="sw-settings-grid">
+        <SpacingCross margin={st.margin} padding={st.padding} onChange={(key, v) => patch({ [key]: v })} />
+        <div>
+          <ColorField label="Cor de fundo" value={st.bg} onChange={(v) => patch({ bg: v })} />
+          <ColorField label="Cor do texto" value={st.color} onChange={(v) => patch({ color: v })} />
+          <label className="sw-label">Container</label>
+          <select className="sw-select" value={st.container} onChange={(e) => patch({ container: e.target.value })}>
+            <option value="full">100% (largura total)</option>
+            <option value="grid">Grid (centralizado, máx 1100px)</option>
+          </select>
+        </div>
+      </div>
     </div>
   )
 }
