@@ -9,7 +9,7 @@ export const SECTIONS = [
 
 export default function Sidebar({ current, onChange }) {
   return (
-    <aside className="sw-sidebar">
+    <aside className="sw-sidebar anim-up" style={{ '--delay': '0.07s' }}>
       {SECTIONS.map((s) => {
         const active = current === s.key
         return (

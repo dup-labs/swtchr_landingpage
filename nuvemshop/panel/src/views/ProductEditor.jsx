@@ -93,7 +93,7 @@ export default function ProductEditor({ product }) {
   }
 
   return (
-    <div>
+    <div className="anim-fade">
       <div style={{ margin: '6px 0 20px' }}>
         <h2 className="sw-title">{product.name}</h2>
         <span className="sw-meta">#{product.id}</span>

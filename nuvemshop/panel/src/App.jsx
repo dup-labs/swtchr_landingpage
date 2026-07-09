@@ -14,8 +14,11 @@ export default function App() {
 
   return (
     <div className="sw-app">
-      <header className="sw-topbar">
-        <img src="/logo-swtchr-black.svg" alt="SWTCHR by dup.agency" className="sw-topbar__logo" />
+      <header className="sw-topbar anim-up">
+        <span style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
+          <img src="/logo-swtchr-black.svg" alt="SWTCHR" className="sw-topbar__logo" />
+          <span style={{ fontSize: 11, fontWeight: 300, letterSpacing: '0.05em', color: 'var(--muted)' }}>by dup.agency</span>
+        </span>
         <span className="sw-badge">
           <span className="sw-badge__dot" />
           {mode === 'embedded' ? 'no admin' : mode === 'standalone' ? 'standalone' : '…'}
@@ -24,7 +27,7 @@ export default function App() {
 
       <div className="sw-shell">
         <Sidebar current={tab} onChange={setTab} />
-        <main className="sw-main">
+        <main className="sw-main anim-up" style={{ '--delay': '0.14s' }}>
           {tab === 'produto' ? <ProductTab /> : <ComingSoon label={SECTIONS.find((s) => s.key === tab).label} />}
         </main>
       </div>

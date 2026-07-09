@@ -54,7 +54,7 @@ export default function ProductList({ onOpen }) {
   const nothing = term && !searching && filtered.length === 0 && catalogOnly.length === 0
 
   return (
-    <div>
+    <div className="anim-fade">
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
         <input
           ref={inputRef}
