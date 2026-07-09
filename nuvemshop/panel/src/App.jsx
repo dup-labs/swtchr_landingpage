@@ -4,13 +4,7 @@ import { initNexo } from './nexo.js'
 import { C, styles, RichText, ImageUploader } from './ui.jsx'
 import { SortableList, SortableItem, DragHandle, arrayMove, uid } from './dnd.jsx'
 import { SettingsEditor, emptySettings } from './settings.jsx'
-
-const TABS = [
-  { key: 'home', label: 'Home', ready: false },
-  { key: 'categoria', label: 'Categoria', ready: false },
-  { key: 'produto', label: 'Produto', ready: true },
-  { key: 'paginas', label: 'Páginas', ready: false },
-]
+import Sidebar, { SECTIONS } from './views/Sidebar.jsx'
 
 const emptyFor = (f) =>
   f.type === 'items' ? [] : f.type === 'toggle' ? f.default ?? false : f.type === 'number' ? f.default ?? 0 : ''
@@ -46,43 +40,30 @@ export default function App() {
   }, [])
 
   return (
-    <div style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif", color: C.ink, background: C.surface, minHeight: '100vh' }}>
-      <header style={{ background: C.white, borderBottom: `1px solid ${C.line}`, padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <img src="/logo-swtchr-black.svg" alt="SWTCHR by dup.agency" style={{ height: 24, display: 'block' }} />
-        <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.18em', color: C.muted }}>
+    <div className="sw-app">
+      <header className="sw-topbar">
+        <img src="/logo-swtchr-black.svg" alt="SWTCHR by dup.agency" className="sw-topbar__logo" />
+        <span className="sw-badge">
+          <span className="sw-badge__dot" />
           {mode === 'embedded' ? 'no admin' : mode === 'standalone' ? 'standalone' : '…'}
         </span>
       </header>
 
-      <nav style={{ display: 'flex', gap: 4, padding: '0 20px', background: C.white, borderBottom: `1px solid ${C.line}` }}>
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            style={{
-              border: 'none', background: 'none', cursor: 'pointer', padding: '14px 14px', fontFamily: 'inherit', fontSize: 13, fontWeight: 700,
-              color: tab === t.key ? C.ink : C.muted,
-              borderBottom: `2px solid ${tab === t.key ? C.brand : 'transparent'}`,
-            }}
-          >
-            {t.label}
-            {!t.ready && <span style={{ fontSize: 9, color: C.muted, marginLeft: 5, fontWeight: 600 }}>em breve</span>}
-          </button>
-        ))}
-      </nav>
-
-      <main style={{ maxWidth: 720, margin: '0 auto', padding: '28px 20px 80px' }}>
-        {tab === 'produto' ? <ProductTab /> : <ComingSoon label={TABS.find((t) => t.key === tab).label} />}
-      </main>
+      <div className="sw-shell">
+        <Sidebar current={tab} onChange={setTab} />
+        <main className="sw-main">
+          {tab === 'produto' ? <ProductTab /> : <ComingSoon label={SECTIONS.find((s) => s.key === tab).label} />}
+        </main>
+      </div>
     </div>
   )
 }
 
 function ComingSoon({ label }) {
   return (
-    <div style={{ textAlign: 'center', color: C.muted, padding: '60px 20px', border: `1px dashed ${C.line}`, borderRadius: 16 }}>
-      <div style={{ fontSize: 15, fontWeight: 700, color: C.ink, marginBottom: 6 }}>{label} — em breve</div>
-      <div style={{ fontSize: 13 }}>Este destino depende de recurso de tema seccionável (Ipanema) ainda em liberação pela Nuvemshop.</div>
+    <div className="sw-empty">
+      <div className="sw-empty__title">{label} — em breve</div>
+      <p>Este destino depende de recurso de tema seccionável (Ipanema) ainda em liberação pela Nuvemshop.</p>
     </div>
   )
 }
