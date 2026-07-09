@@ -204,6 +204,132 @@ export const BLOCK_TYPES = {
       return `<section class="swtchr-block swtchr-carousel-block"><div class="swtchr-carousel" ${opts}>${slides.join('')}</div></section>`
     },
   },
+
+  // Lista de detalhes — itens numerados sobre imagem de fundo (painel "Feito no detalhe")
+  feature_list: {
+    label: 'Lista de detalhes',
+    fields: [
+      { id: 'image', type: 'image', label: 'Imagem de fundo' },
+      { id: 'eyebrow', type: 'text', label: 'Eyebrow (ex.: — Feito no detalhe)' },
+      { id: 'title', type: 'text', label: 'Título' },
+      {
+        id: 'items',
+        type: 'items',
+        label: 'Itens',
+        itemFields: [
+          { id: 'title', type: 'text', label: 'Título do item' },
+          { id: 'text', type: 'text', label: 'Texto do item' },
+        ],
+      },
+    ],
+    render(fields) {
+      const img = isHttpUrl(fields.image) ? fields.image : ''
+      const items = (Array.isArray(fields.items) ? fields.items : [])
+        .filter((it) => it.title || it.text)
+        .map(
+          (it, i) =>
+            `<div class="swtchr-features__item"><span>${String(i + 1).padStart(2, '0')}</span><div>` +
+            (it.title ? `<h3>${escapeHtml(it.title)}</h3>` : '') +
+            (it.text ? `<p>${escapeHtml(it.text)}</p>` : '') +
+            `</div></div>`
+        )
+      if (!items.length && !fields.title) return ''
+      return (
+        `<section class="swtchr-block swtchr-features">` +
+        (img ? `<img class="swtchr-features__bg" src="${escapeAttr(img)}" alt="" loading="lazy">` : '') +
+        `<div class="swtchr-features__shade"></div><div class="swtchr-features__inner">` +
+        (fields.eyebrow ? `<p class="swtchr-eyebrow">${escapeHtml(fields.eyebrow)}</p>` : '') +
+        (fields.title ? `<h2 class="swtchr-features__title">${escapeHtml(fields.title)}</h2>` : '') +
+        `<div class="swtchr-features__list">${items.join('')}</div></div></section>`
+      )
+    },
+  },
+
+  // Ficha técnica & cuidados — pares rótulo/valor + ícones de cuidado sobre fundo
+  ficha_cuidados: {
+    label: 'Ficha técnica & cuidados',
+    fields: [
+      { id: 'image', type: 'image', label: 'Imagem central (fundo)' },
+      {
+        id: 'items',
+        type: 'items',
+        label: 'Ficha técnica',
+        itemFields: [
+          { id: 'label', type: 'text', label: 'Rótulo (ex.: Composição)' },
+          { id: 'value', type: 'text', label: 'Valor' },
+        ],
+      },
+      { id: 'care_wash30', type: 'toggle', label: 'Cuidado: lavar 30°C máx', default: true },
+      { id: 'care_hand', type: 'toggle', label: 'Cuidado: lavar à mão', default: true },
+      { id: 'care_noiron', type: 'toggle', label: 'Cuidado: não passar', default: true },
+      { id: 'care_nodry', type: 'toggle', label: 'Cuidado: não secar na máquina', default: true },
+    ],
+    render(fields) {
+      const img = isHttpUrl(fields.image) ? fields.image : ''
+      const specs = (Array.isArray(fields.items) ? fields.items : [])
+        .filter((it) => it.label || it.value)
+        .map((it) => `<li><strong>${escapeHtml(it.label)}:</strong> <span>${escapeHtml(it.value)}</span></li>`)
+      // ícones inline (stroke) — allowlist não permite <svg> no richtext, mas aqui é render nosso
+      const CARE = {
+        care_wash30: ['<svg viewBox="0 0 48 42" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16 L42 16 L38.4 34 Q37.8 37 34.7 37 L13.3 37 Q10.2 37 9.6 34 Z"></path><path d="M6 16 Q11.5 8.8 17 13.8 Q22.5 18.8 28 13.8 Q33.5 8.8 42 16"></path><circle cx="24" cy="26.5" r="2.5" fill="currentColor" stroke="none"></circle></svg>', '30°C máx'],
+        care_hand: ['<svg viewBox="0 0 48 42" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15 L42 15 L38.4 34 Q37.8 37 34.7 37 L13.3 37 Q10.2 37 9.6 34 Z"></path><path d="M18 25 v-4 M22 25 v-6 M26 25 v-6 M30 25 v-4"></path><path d="M15 25 q0 5 6.5 5 h5 q6.5 0 6.5-6"></path></svg>', 'Lavar à mão'],
+        care_noiron: ['<svg viewBox="0 0 48 42" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 31 L41 31 L41 26 Q41 21 34 20 L14 17 Q8.5 16.5 7.5 22 Z"></path><path d="M12 13 L36 33 M36 13 L12 33"></path></svg>', 'Não passar'],
+        care_nodry: ['<svg viewBox="0 0 48 42" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="11" width="30" height="22" rx="1.5"></rect><path d="M9 11 L39 33 M39 11 L9 33"></path></svg>', 'Não secar'],
+      }
+      const care = Object.entries(CARE)
+        .filter(([k]) => fields[k] !== false)
+        .map(([, [svg, label]]) => `<div class="swtchr-care__icon">${svg}<span>${escapeHtml(label)}</span></div>`)
+      if (!specs.length && !care.length) return ''
+      return (
+        `<section class="swtchr-block swtchr-care"${img ? ` style="background-image:url('${escapeAttr(img)}')"` : ''}>` +
+        `<div class="swtchr-care__grid">` +
+        `<div><p class="swtchr-eyebrow">— Ficha técnica</p><ul class="swtchr-care__specs">${specs.join('')}</ul></div>` +
+        `<div class="swtchr-care__spacer"></div>` +
+        `<div><p class="swtchr-eyebrow">— Cuidados</p><div class="swtchr-care__icons">${care.join('')}</div></div>` +
+        `</div></section>`
+      )
+    },
+  },
+
+  // Avaliações — nota + cards de review
+  reviews: {
+    label: 'Avaliações',
+    fields: [
+      { id: 'title', type: 'text', label: 'Título (ex.: Nota 4,9 de 5)' },
+      { id: 'subtitle', type: 'text', label: 'Legenda (ex.: 128 avaliações)' },
+      {
+        id: 'items',
+        type: 'items',
+        label: 'Avaliações',
+        itemFields: [
+          { id: 'stars', type: 'number', label: 'Estrelas (1–5)', default: 5, min: 1, max: 5 },
+          { id: 'text', type: 'text', label: 'Depoimento' },
+          { id: 'author', type: 'text', label: 'Autor' },
+        ],
+      },
+    ],
+    render(fields) {
+      const star = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>'
+      const stars = (n) => `<span class="swtchr-stars">${star.repeat(Math.max(1, Math.min(5, parseInt(n, 10) || 5)))}</span>`
+      const items = (Array.isArray(fields.items) ? fields.items : [])
+        .filter((it) => it.text)
+        .map(
+          (it) =>
+            `<div class="swtchr-review">${stars(it.stars)}<p>&ldquo;${escapeHtml(it.text)}&rdquo;</p>` +
+            (it.author ? `<span class="swtchr-review__author">${escapeHtml(it.author)}</span>` : '') +
+            `</div>`
+        )
+      if (!items.length) return ''
+      return (
+        `<section class="swtchr-block swtchr-reviews"><div class="swtchr-reviews__head">` +
+        `<div><p class="swtchr-eyebrow">— Quem usa</p>` +
+        (fields.title ? `<h2 class="swtchr-reviews__title">${escapeHtml(fields.title)}</h2>` : '') +
+        `</div>` +
+        (fields.subtitle ? `<div class="swtchr-reviews__meta">${stars(5)}<span>${escapeHtml(fields.subtitle)}</span></div>` : '') +
+        `</div><div class="swtchr-reviews__grid">${items.join('')}</div></section>`
+      )
+    },
+  },
 }
 
 // ---------- config: normalização + validação ----------
