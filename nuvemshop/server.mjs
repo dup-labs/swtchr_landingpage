@@ -10,6 +10,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { exchangeCode, createClient } from './lib/nuvemshop.mjs'
 import { validateBlock, getBlock, saveBlock, ensureHomeHolder } from './lib/blocks.mjs'
+import { createAssetStore, extractCdnUrls, replaceUrls } from './lib/assets.mjs'
 import {
   buildSave, validateConfig, normalizeConfig, emptyConfig,
   BLOCK_TYPES, NAMESPACE, KEY_CONFIG, KEY_HTML, METAFIELD_MAX,
@@ -19,6 +20,7 @@ const ROOT = path.dirname(fileURLToPath(import.meta.url))
 const DATA_DIR = path.join(ROOT, '.data')
 const TOKEN_FILE = path.join(DATA_DIR, 'token.json')
 const CONFIG_FILE = path.join(DATA_DIR, 'config.json')
+const assetStore = createAssetStore(DATA_DIR)
 
 loadDotEnv()
 const PORT = Number(process.env.PORT || 8787)
@@ -260,7 +262,192 @@ async function uploadImage(body) {
   else if (src) payload = { src }
   else throw badReq('mande dataBase64 (arquivo) ou src (url)')
   const img = await api.request(`/products/${assetsId}/images`, { method: 'POST', body: payload })
+  // protocolo de backup: persiste a cópia local + manifesto antes de responder
+  try {
+    const buffer = dataBase64
+      ? Buffer.from(dataBase64, 'base64')
+      : Buffer.from(await (await fetch(img.src)).arrayBuffer())
+    assetStore.record({ buffer, filename: filename || path.basename(new URL(img.src).pathname), imageId: img.id, src: img.src })
+  } catch (err) {
+    console.error('⚠ backup local do upload falhou (upload na loja ok):', err.message)
+  }
   return { ok: true, src: img.src, id: img.id }
+}
+
+// ---------- protocolo de backup dos assets ----------
+
+// varre TODOS os metafields do namespace swtchr (products/categories/pages) — é
+// onde as URLs de imagem aparecem (pdp_config, pdp_html e os campos flat de bloco)
+async function scanSwtchrMetafields(api) {
+  const rows = []
+  for (const kind of ['products', 'categories', 'pages']) {
+    for (let page = 1; ; page++) {
+      let batch
+      try {
+        batch = (await api.request(`/metafields/${kind}?namespace=${NAMESPACE}&per_page=100&page=${page}`)) || []
+      } catch (err) {
+        if (err.status === 404) break // recurso sem metafields
+        throw err
+      }
+      for (const m of batch) rows.push({ ...m, _kind: kind })
+      if (batch.length < 100) break
+    }
+  }
+  return rows
+}
+
+// backfill + mapa de uso: baixa pro disco o que ainda não tem cópia e regrava o manifesto
+async function assetsBackup() {
+  const api = client()
+  const assetsId = await ensureAssetsProduct(api)
+  const manifest = assetStore.load()
+  const known = new Set(Object.values(manifest.assets).flatMap((a) => a.srcs || (a.src ? [a.src] : [])))
+  let downloaded = 0
+
+  const images = (await api.request(`/products/${assetsId}/images`)) || []
+  for (const img of images) {
+    if (known.has(img.src)) continue
+    const buffer = Buffer.from(await (await fetch(img.src)).arrayBuffer())
+    assetStore.record({ buffer, filename: path.basename(new URL(img.src).pathname), imageId: img.id, src: img.src })
+    downloaded++
+  }
+
+  // mapa de uso: URL → onde ela aparece (owner + metafield)
+  const usage = {}
+  const rows = await scanSwtchrMetafields(api)
+  for (const m of rows) {
+    for (const url of extractCdnUrls(m.value)) {
+      usage[url] = usage[url] || []
+      usage[url].push({ kind: m._kind, ownerId: m.owner_id, key: m.key, metafieldId: m.id })
+    }
+  }
+  const fresh = assetStore.load()
+  fresh.usage = usage
+  assetStore.save(fresh)
+
+  return {
+    ok: true,
+    assetHost: assetsId,
+    imagensNoHost: images.length,
+    baixadasAgora: downloaded,
+    copiasLocais: Object.keys(fresh.assets).length,
+    urlsEmUso: Object.keys(usage).length,
+    manifesto: '.data/assets.json',
+  }
+}
+
+// saúde: host existe? URLs vivas? cópias locais presentes?
+async function assetsStatus() {
+  const api = client()
+  const config = getConfig()
+  const manifest = assetStore.load()
+  let hostOk = false
+  if (config.assetsProductId) {
+    try {
+      await api.request(`/products/${config.assetsProductId}?fields=id`)
+      hostOk = true
+    } catch (err) {
+      if (err.status !== 404) throw err
+    }
+  }
+  const entries = Object.entries(manifest.assets)
+  const deadUrls = []
+  const semCopiaLocal = []
+  for (const [hash, a] of entries) {
+    if (!assetStore.readLocal(a)) semCopiaLocal.push(a.file)
+    for (const src of a.srcs || (a.src ? [a.src] : [])) {
+      const r = await fetch(src, { method: 'HEAD' }).catch(() => null)
+      if (!r || !r.ok) deadUrls.push({ hash, src })
+    }
+  }
+  // URLs em uso nos metafields (podem ser do asset host OU estáticos do tema)
+  const emUsoMortas = []
+  for (const [url, locais] of Object.entries(manifest.usage || {})) {
+    const r = await fetch(url, { method: 'HEAD' }).catch(() => null)
+    if (r && r.ok) continue
+    const origem = url.includes('/templates/') ? 'tema (restaurar via FTP do theme-ftp-mirror)' : 'asset host'
+    emUsoMortas.push({ url, origem, usadaEm: locais })
+  }
+  return {
+    ok: hostOk && deadUrls.length === 0 && semCopiaLocal.length === 0 && emUsoMortas.length === 0,
+    assetHostVivo: hostOk,
+    copiasLocais: entries.length,
+    urlsMortas: deadUrls,
+    urlsEmUsoMortas: emUsoMortas,
+    semCopiaLocal,
+    ultimoBackup: manifest.updatedAt,
+  }
+}
+
+// restauração: recria o host se sumiu, re-sobe o que morreu e reescreve os metafields
+async function assetsRestore(body) {
+  const dryRun = Boolean(body?.dryRun)
+  const api = client()
+  const config = getConfig()
+  const manifest = assetStore.load()
+  const acoes = []
+
+  // 1. host vivo? se foi excluído, esquece o id antigo e recria
+  let hostOk = false
+  if (config.assetsProductId) {
+    try {
+      await api.request(`/products/${config.assetsProductId}?fields=id`)
+      hostOk = true
+    } catch (err) {
+      if (err.status !== 404) throw err
+    }
+  }
+  if (!hostOk) {
+    acoes.push('recriar asset host')
+    if (!dryRun) {
+      config.assetsProductId = null
+      saveJson(CONFIG_FILE, config)
+      await ensureAssetsProduct(api)
+    }
+  }
+
+  // 2. re-sobe cada asset com URL morta (uma subida por conteúdo, mesmo com N URLs mortas)
+  const urlMap = {}
+  for (const [hash, a] of Object.entries(manifest.assets)) {
+    const srcs = a.srcs || (a.src ? [a.src] : [])
+    const dead = []
+    for (const src of srcs) {
+      const alive = await fetch(src, { method: 'HEAD' }).then((r) => r.ok).catch(() => false)
+      if (!alive) dead.push(src)
+    }
+    if (!dead.length) continue
+    const buffer = assetStore.readLocal(a)
+    if (!buffer) {
+      acoes.push(`SEM CÓPIA LOCAL de ${a.filename} (${dead.length} URL morta) — irrecuperável`)
+      continue
+    }
+    acoes.push(`re-subir ${a.filename} (${dead.length} URL morta)`)
+    if (!dryRun) {
+      const assetsId = getConfig().assetsProductId
+      const img = await api.request(`/products/${assetsId}/images`, {
+        method: 'POST',
+        body: { attachment: buffer.toString('base64'), filename: a.filename },
+      })
+      for (const src of dead) urlMap[src] = img.src
+      const vivos = srcs.filter((s) => !dead.includes(s))
+      manifest.assets[hash] = { ...a, src: img.src, imageId: img.id, srcs: [...vivos, img.src] }
+    }
+  }
+
+  // 3. reescreve metafields que apontavam pras URLs mortas
+  let metafieldsCorrigidos = 0
+  if (Object.keys(urlMap).length) {
+    const rows = await scanSwtchrMetafields(api)
+    for (const m of rows) {
+      const novo = replaceUrls(m.value, urlMap)
+      if (novo === null) continue
+      metafieldsCorrigidos++
+      await api.request(`/metafields/${m.id}`, { method: 'PUT', body: { value: novo } })
+    }
+    assetStore.save(manifest)
+  }
+
+  return { ok: true, dryRun, acoes, urlsTrocadas: urlMap, metafieldsCorrigidos }
 }
 
 async function history() {
@@ -347,6 +534,10 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === '/api/pdp' && req.method === 'GET') return sendJson(res, 200, await pdpRead(url.searchParams))
     if (url.pathname === '/api/pdp' && req.method === 'PUT') return sendJson(res, 200, await pdpWrite(await readBody(req)))
     if (url.pathname === '/api/upload' && req.method === 'POST') return sendJson(res, 200, await uploadImage(await readBody(req)))
+    // protocolo de backup dos assets
+    if (url.pathname === '/api/assets/backup' && req.method === 'POST') return sendJson(res, 200, await assetsBackup())
+    if (url.pathname === '/api/assets/status' && req.method === 'GET') return sendJson(res, 200, await assetsStatus())
+    if (url.pathname === '/api/assets/restore' && req.method === 'POST') return sendJson(res, 200, await assetsRestore(await readBody(req)))
     if (url.pathname === '/api/history' && req.method === 'GET') return sendJson(res, 200, await history())
     if (url.pathname === '/api/search' && req.method === 'GET') return sendJson(res, 200, await search(url.searchParams))
     sendJson(res, 404, { error: `rota não existe: ${req.method} ${url.pathname}` })
