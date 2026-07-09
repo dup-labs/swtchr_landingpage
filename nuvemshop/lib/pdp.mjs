@@ -141,7 +141,7 @@ export const BLOCK_TYPES = {
       const text = sanitizeRich(fields.text)
       if (!img && !text) return ''
       return (
-        `<section class="swtchr-block swtchr-hero-image-text">` +
+        `<section class="swtchr-block swtchr-hero-image-text" data-bg="#F9F9F9" data-nav="light">` +
         (img ? `<img class="swtchr-block__img" src="${escapeAttr(img)}" alt="" loading="lazy">` : '') +
         (text ? `<div class="swtchr-block__text">${text}</div>` : '') +
         `</section>`
@@ -201,7 +201,7 @@ export const BLOCK_TYPES = {
       const opts =
         `data-dots="${dots}" data-arrows="${arrows}" data-show="${show}" data-scroll="${scroll}"` +
         (gap ? ` style="--swtchr-gap:${gap}px"` : '')
-      return `<section class="swtchr-block swtchr-carousel-block"><div class="swtchr-carousel" ${opts}>${slides.join('')}</div></section>`
+      return `<section class="swtchr-block swtchr-carousel-block" data-bg="#F9F9F9" data-nav="light"><div class="swtchr-carousel" ${opts}>${slides.join('')}</div></section>`
     },
   },
 
@@ -235,7 +235,7 @@ export const BLOCK_TYPES = {
         )
       if (!items.length && !fields.title) return ''
       return (
-        `<section class="swtchr-block swtchr-features">` +
+        `<section class="swtchr-block swtchr-features" data-bg="#0D0D0D" data-nav="dark">` +
         (img ? `<img class="swtchr-features__bg" src="${escapeAttr(img)}" alt="" loading="lazy">` : '') +
         `<div class="swtchr-features__shade"></div><div class="swtchr-features__inner">` +
         (fields.eyebrow ? `<p class="swtchr-eyebrow">${escapeHtml(fields.eyebrow)}</p>` : '') +
@@ -281,7 +281,7 @@ export const BLOCK_TYPES = {
         .map(([, [svg, label]]) => `<div class="swtchr-care__icon">${svg}<span>${escapeHtml(label)}</span></div>`)
       if (!specs.length && !care.length) return ''
       return (
-        `<section class="swtchr-block swtchr-care"${img ? ` style="background-image:url('${escapeAttr(img)}')"` : ''}>` +
+        `<section class="swtchr-block swtchr-care" data-bg="#ECEBE7" data-nav="light"${img ? ` style="background-image:url('${escapeAttr(img)}')"` : ''}>` +
         `<div class="swtchr-care__grid">` +
         `<div><p class="swtchr-eyebrow">— Ficha técnica</p><ul class="swtchr-care__specs">${specs.join('')}</ul></div>` +
         `<div class="swtchr-care__spacer"></div>` +
@@ -321,7 +321,7 @@ export const BLOCK_TYPES = {
         )
       if (!items.length) return ''
       return (
-        `<section class="swtchr-block swtchr-reviews"><div class="swtchr-reviews__head">` +
+        `<section class="swtchr-block swtchr-reviews" data-bg="#F9F9F9" data-nav="light"><div class="swtchr-reviews__head">` +
         `<div><p class="swtchr-eyebrow">— Quem usa</p>` +
         (fields.title ? `<h2 class="swtchr-reviews__title">${escapeHtml(fields.title)}</h2>` : '') +
         `</div>` +
