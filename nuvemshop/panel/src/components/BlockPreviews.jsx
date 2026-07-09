@@ -154,6 +154,23 @@ ART.reviews = (
   </>
 )
 
+ART.reviews_app = (
+  <>
+    {[14, 52, 90].map((x) => (
+      <g key={x}>
+        <rect x={x} y="18" width="22" height="36" rx="3" fill={W} stroke={L} strokeWidth="1" />
+        {[0, 1, 2].map((i) => (
+          <circle key={i} cx={x + 5 + i * 5} cy="24" r="1.5" fill={B} />
+        ))}
+        <rect x={x + 4} y="30" width="14" height="2.5" rx="1" fill={L} />
+        <rect x={x + 4} y="35" width="12" height="2.5" rx="1" fill={L} />
+      </g>
+    ))}
+    <rect x="40" y="58" width="40" height="9" rx="4.5" fill={S} />
+    <rect x="47" y="61" width="26" height="3" rx="1.5" fill={B} />
+  </>
+)
+
 const FALLBACK = (
   <>
     <rect x="14" y="14" width="92" height="30" rx="3" fill={L} />

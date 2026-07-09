@@ -291,6 +291,17 @@ export const BLOCK_TYPES = {
     },
   },
 
+  // Avaliações da loja — slot pro app de reviews da Nuvemshop (#reviewsapp).
+  // O render emite só o alvo; o runtime do tema realoca o div do app pra cá,
+  // então a posição das avaliações reais é ordenável pelo painel.
+  reviews_app: {
+    label: 'Avaliações da loja (app)',
+    fields: [],
+    render() {
+      return `<section class="swtchr-block swtchr-reviews-slot" data-bg="#F9F9F9" data-nav="light"><div class="swtchr-reviews-slot__target"></div></section>`
+    },
+  },
+
   // Avaliações — nota + cards de review
   reviews: {
     label: 'Avaliações',
