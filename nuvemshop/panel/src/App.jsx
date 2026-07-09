@@ -39,7 +39,7 @@ function ComingSoon({ label }) {
   return (
     <div className="sw-empty">
       <div className="sw-empty__title">{label} — em breve</div>
-      <p>Este destino depende de recurso de tema seccionável (Ipanema) ainda em liberação pela Nuvemshop.</p>
+      <p>No momento estamos alinhando novos processos e logo estarão disponíveis.</p>
     </div>
   )
 }
