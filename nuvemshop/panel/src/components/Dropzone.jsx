@@ -20,7 +20,8 @@ const IconImage = () => (
 )
 
 // uploader: clique ou arraste → /api/upload → URL do CDN da loja
-export default function Dropzone({ label, value, onChange, minHeight = 150 }) {
+// proporção 4:3 fixa (quadradão, não barra) + largura contida
+export default function Dropzone({ label, value, onChange, minHeight }) {
   const inputRef = useRef(null)
   const [busy, setBusy] = useState(false)
   const [drag, setDrag] = useState(false)
@@ -43,10 +44,10 @@ export default function Dropzone({ label, value, onChange, minHeight = 150 }) {
 
   const cls = 'sw-drop' + (value ? ' sw-drop--filled' : '') + (drag ? ' sw-drop--drag' : '')
   return (
-    <div style={{ flex: 1, minWidth: 0 }}>
+    <div style={{ flex: '1 1 240px', minWidth: 0, maxWidth: 380 }}>
       <div
         className={cls}
-        style={{ minHeight }}
+        style={minHeight ? { minHeight } : undefined}
         role="button"
         tabIndex={0}
         onClick={() => !busy && inputRef.current?.click()}

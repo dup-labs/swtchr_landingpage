@@ -16,8 +16,8 @@ export function FieldEditor({ field, value, onChange, idKey }) {
     )
   if (field.type === 'image')
     return (
-      <div className="sw-field sw-field--full" style={{ margin: '14px 0', display: 'flex' }}>
-        <Dropzone label={field.label} value={value || ''} onChange={onChange} minHeight={120} />
+      <div className="sw-field" style={{ margin: '14px 0', display: 'flex' }}>
+        <Dropzone label={field.label} value={value || ''} onChange={onChange} />
       </div>
     )
   if (field.type === 'toggle')

@@ -71,6 +71,15 @@ function cleanUrl(v) {
   return ''
 }
 
+// <img> responsivo: com variante mobile vira <picture> (performance);
+// sem mobile emite <img> puro — idêntico ao render antigo (retrocompat).
+function responsiveImg(desktop, mobile, cls, loading = 'lazy') {
+  const m = isHttpUrl(mobile) ? mobile : ''
+  const img = `<img class="${cls}" src="${escapeAttr(desktop)}" alt="" loading="${loading}">`
+  if (!m) return img
+  return `<picture><source media="(max-width: 640px)" srcset="${escapeAttr(m)}">${img}</picture>`
+}
+
 // ---------- settings de estilo por bloco (desktop/mobile) ----------
 // TODO valor sanitizado ANTES de entrar num <style> (senão é injeção de CSS).
 function cleanHex(v) {
@@ -133,7 +142,8 @@ export const BLOCK_TYPES = {
   hero_image_text: {
     label: 'Imagem + Texto',
     fields: [
-      { id: 'image', type: 'image', label: 'Imagem' },
+      { id: 'image', type: 'image', label: 'Imagem (desktop)' },
+      { id: 'image_mobile', type: 'image', label: 'Imagem (mobile)' },
       { id: 'text', type: 'richtext', label: 'Texto' },
     ],
     render(fields) {
@@ -142,7 +152,7 @@ export const BLOCK_TYPES = {
       if (!img && !text) return ''
       return (
         `<section class="swtchr-block swtchr-hero-image-text" data-bg="#F9F9F9" data-nav="light">` +
-        (img ? `<img class="swtchr-block__img" src="${escapeAttr(img)}" alt="" loading="lazy">` : '') +
+        (img ? responsiveImg(img, fields.image_mobile, 'swtchr-block__img') : '') +
         (text ? `<div class="swtchr-block__text">${text}</div>` : '') +
         `</section>`
       )
@@ -165,7 +175,8 @@ export const BLOCK_TYPES = {
         type: 'items',
         label: 'Slides',
         itemFields: [
-          { id: 'image', type: 'image', label: 'Imagem' },
+          { id: 'image', type: 'image', label: 'Imagem (desktop)' },
+          { id: 'image_mobile', type: 'image', label: 'Imagem (mobile)' },
           { id: 'text', type: 'richtext', label: 'Texto' },
           { id: 'button_text', type: 'text', label: 'Texto do botão' },
           { id: 'button_link', type: 'url', label: 'Link do botão' },
@@ -185,7 +196,7 @@ export const BLOCK_TYPES = {
           // wrapper interno (.swtchr-slide__row) leva o flex; o .swtchr-slide é do Slick
           return (
             `<div class="swtchr-slide"><div class="swtchr-slide__row">` +
-            (img ? `<div class="swtchr-slide__media"><img src="${escapeAttr(img)}" alt="" loading="lazy"></div>` : '') +
+            (img ? `<div class="swtchr-slide__media">${responsiveImg(img, it.image_mobile, 'swtchr-slide__img')}</div>` : '') +
             `<div class="swtchr-slide__body">${text ? `<div class="swtchr-slide__text">${text}</div>` : ''}${btn}</div>` +
             `</div></div>`
           )
@@ -209,7 +220,8 @@ export const BLOCK_TYPES = {
   feature_list: {
     label: 'Lista de detalhes',
     fields: [
-      { id: 'image', type: 'image', label: 'Imagem de fundo' },
+      { id: 'image', type: 'image', label: 'Imagem de fundo (desktop)' },
+      { id: 'image_mobile', type: 'image', label: 'Imagem de fundo (mobile)' },
       { id: 'eyebrow', type: 'text', label: 'Eyebrow (ex.: — Feito no detalhe)' },
       { id: 'title', type: 'text', label: 'Título' },
       {
@@ -236,7 +248,7 @@ export const BLOCK_TYPES = {
       if (!items.length && !fields.title) return ''
       return (
         `<section class="swtchr-block swtchr-features" data-bg="#0D0D0D" data-nav="dark">` +
-        (img ? `<img class="swtchr-features__bg" src="${escapeAttr(img)}" alt="" loading="lazy">` : '') +
+        (img ? responsiveImg(img, fields.image_mobile, 'swtchr-features__bg') : '') +
         `<div class="swtchr-features__shade"></div><div class="swtchr-features__inner">` +
         (fields.eyebrow ? `<p class="swtchr-eyebrow">${escapeHtml(fields.eyebrow)}</p>` : '') +
         (fields.title ? `<h2 class="swtchr-features__title">${escapeHtml(fields.title)}</h2>` : '') +
@@ -249,7 +261,8 @@ export const BLOCK_TYPES = {
   ficha_cuidados: {
     label: 'Ficha técnica & cuidados',
     fields: [
-      { id: 'image', type: 'image', label: 'Imagem central (fundo)' },
+      { id: 'image', type: 'image', label: 'Imagem central (desktop)' },
+      { id: 'image_mobile', type: 'image', label: 'Imagem central (mobile)' },
       {
         id: 'items',
         type: 'items',
@@ -280,8 +293,13 @@ export const BLOCK_TYPES = {
         .filter(([k]) => fields[k] !== false)
         .map(([, [svg, label]]) => `<div class="swtchr-care__icon">${svg}<span>${escapeHtml(label)}</span></div>`)
       if (!specs.length && !care.length) return ''
+      // bg via CSS vars: desktop + mobile (media query no runtime usa a --m)
+      const imgM = isHttpUrl(fields.image_mobile) ? fields.image_mobile : ''
+      const bgStyle = img
+        ? ` style="background-image:url('${escapeAttr(img)}');--swtchr-care-bg-m:url('${escapeAttr(imgM || img)}')"`
+        : ''
       return (
-        `<section class="swtchr-block swtchr-care" data-bg="#ECEBE7" data-nav="light"${img ? ` style="background-image:url('${escapeAttr(img)}')"` : ''}>` +
+        `<section class="swtchr-block swtchr-care" data-bg="#ECEBE7" data-nav="light"${bgStyle}>` +
         `<div class="swtchr-care__grid">` +
         `<div><p class="swtchr-eyebrow">— Ficha técnica</p><ul class="swtchr-care__specs">${specs.join('')}</ul></div>` +
         `<div class="swtchr-care__spacer"></div>` +
