@@ -2,14 +2,14 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../api.js'
 import { Spinner, EmptyState } from '../components/primitives.jsx'
 
-function Row({ p, onOpen }) {
+function Row({ p, onOpen, ghost }) {
   return (
-    <button className="sw-row" onClick={() => onOpen(p)} data-testid={'row-' + p.id}>
+    <button className={'sw-row' + (ghost ? ' sw-row--ghost' : '')} onClick={() => onOpen(p)} data-testid={'row-' + p.id}>
       <span className="sw-row__body">
         <span className="sw-row__title">{p.name}</span>
         <span className="sw-meta">#{p.id}</span>
       </span>
-      <span className="sw-row__action">Editar →</span>
+      <span className="sw-row__action">{ghost ? 'Configurar →' : 'Editar →'}</span>
     </button>
   )
 }
@@ -83,11 +83,11 @@ export default function ProductList({ onOpen }) {
 
       {term && (searching || catalogOnly.length > 0) && (
         <div style={{ margin: '26px 0 12px' }}>
-          <div className="sw-h3" style={{ margin: 0 }}>No catálogo</div>
+          <div className="sw-h3" style={{ margin: 0 }}>Conteúdo não cadastrado</div>
         </div>
       )}
       {term && searching && <Spinner label="buscando no catálogo…" />}
-      {!searching && catalogOnly.map((p) => <Row key={p.id} p={p} onOpen={onOpen} />)}
+      {!searching && catalogOnly.map((p) => <Row key={p.id} p={p} onOpen={onOpen} ghost />)}
 
       {nothing && <EmptyState title="Nada encontrado">Nenhum produto com esse nome ou id.</EmptyState>}
     </div>
