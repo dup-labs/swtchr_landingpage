@@ -32,9 +32,11 @@ export default function BlockCard({ block, def, open, onToggleOpen, onPatch, onF
             </button>
           </div>
 
-          {(def?.fields || []).map((f) => (
-            <FieldEditor key={f.id} field={f} value={block.fields[f.id]} onChange={(v) => onField(f.id, v)} idKey={block.id + f.id} />
-          ))}
+          <div className="sw-fields">
+            {(def?.fields || []).map((f) => (
+              <FieldEditor key={f.id} field={f} value={block.fields[f.id]} onChange={(v) => onField(f.id, v)} idKey={block.id + f.id} />
+            ))}
+          </div>
 
           <div style={{ borderTop: '1px solid var(--divider)', marginTop: 18 }}>
             <button type="button" className="sw-acc__head" onClick={onToggleSettings}>

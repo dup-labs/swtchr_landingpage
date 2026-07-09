@@ -4,49 +4,55 @@ import Dropzone from './components/Dropzone.jsx'
 import { Toggle } from './components/primitives.jsx'
 import { SortableList, SortableItem, DragHandle, arrayMove, uid } from './dnd.jsx'
 
-// roteador de campo por tipo (usado em blocos e, recursivamente, em slides)
+// roteador de campo por tipo (usado em blocos e, recursivamente, em slides).
+// Cada campo sai embrulhado em .sw-field; os "largos" (imagem/richtext/slides)
+// ganham --full pra ocupar a linha inteira dentro do grid .sw-fields.
 export function FieldEditor({ field, value, onChange, idKey }) {
-  if (field.type === 'items') return <ItemsEditor field={field} items={Array.isArray(value) ? value : []} onChange={onChange} idKey={idKey} />
+  if (field.type === 'items')
+    return (
+      <div className="sw-field sw-field--full">
+        <ItemsEditor field={field} items={Array.isArray(value) ? value : []} onChange={onChange} idKey={idKey} />
+      </div>
+    )
   if (field.type === 'image')
     return (
-      <div style={{ margin: '14px 0', display: 'flex' }}>
+      <div className="sw-field sw-field--full" style={{ margin: '14px 0', display: 'flex' }}>
         <Dropzone label={field.label} value={value || ''} onChange={onChange} minHeight={120} />
       </div>
     )
   if (field.type === 'toggle')
     return (
-      <div style={{ margin: '14px 0' }}>
+      <div className="sw-field sw-field--toggle" style={{ margin: '14px 0' }}>
         <Toggle checked={value === '' || value == null ? !!field.default : !!value} onChange={onChange} label={field.label} />
       </div>
     )
   if (field.type === 'number')
     return (
-      <>
+      <div className="sw-field">
         <label className="sw-label">{field.label}</label>
         <input
           type="number"
           className="sw-input"
-          style={{ maxWidth: 150 }}
           min={field.min}
           max={field.max}
           value={value === '' || value == null ? '' : value}
           placeholder={String(field.default ?? '')}
           onChange={(e) => onChange(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
         />
-      </>
+      </div>
     )
   if (field.type === 'richtext')
     return (
-      <>
+      <div className="sw-field sw-field--full">
         <label className="sw-label">{field.label}</label>
         <RichText key={idKey} value={value || ''} onChange={onChange} placeholder={field.label} />
-      </>
+      </div>
     )
   return (
-    <>
+    <div className="sw-field">
       <label className="sw-label">{field.label}</label>
       <input className="sw-input" value={value || ''} onChange={(e) => onChange(e.target.value)} placeholder={field.type === 'url' ? 'https://… ou /caminho' : ''} />
-    </>
+    </div>
   )
 }
 
@@ -104,13 +110,28 @@ export function ItemsEditor({ field, items, onChange, idKey }) {
                       excluir
                     </button>
                   </div>
-                  {isOpen && (
-                    <div className="sw-slide__body">
-                      {field.itemFields.map((f) => (
-                        <FieldEditor key={f.id} field={f} value={it[f.id]} onChange={(v) => setItemField(it._uid, f.id, v)} idKey={idKey + '-' + it._uid + '-' + f.id} />
-                      ))}
-                    </div>
-                  )}
+                  {isOpen &&
+                    (() => {
+                      const imgs = field.itemFields.filter((f) => f.type === 'image')
+                      const rest = field.itemFields.filter((f) => f.type !== 'image')
+                      const editors = (fs) =>
+                        fs.map((f) => (
+                          <FieldEditor key={f.id} field={f} value={it[f.id]} onChange={(v) => setItemField(it._uid, f.id, v)} idKey={idKey + '-' + it._uid + '-' + f.id} />
+                        ))
+                      // imagem de um lado, conteúdo do outro (proporção decente pro preview)
+                      if (imgs.length)
+                        return (
+                          <div className="sw-slide__body sw-slide__cols">
+                            <div style={{ paddingTop: 14 }}>
+                              {imgs.map((f) => (
+                                <Dropzone key={f.id} label={f.label} value={it[f.id] || ''} onChange={(v) => setItemField(it._uid, f.id, v)} minHeight={210} />
+                              ))}
+                            </div>
+                            <div className="sw-fields">{editors(rest)}</div>
+                          </div>
+                        )
+                      return <div className="sw-slide__body sw-fields">{editors(field.itemFields)}</div>
+                    })()}
                 </div>
               )}
             </SortableItem>
