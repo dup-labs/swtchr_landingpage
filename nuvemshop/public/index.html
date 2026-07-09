@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SWTCHR — POC Nuvemshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand: #639BFC;
+    --ink: #0D1015;
+    --surface: #F9FAFC;
+    --muted: #8F94A7;
+    --sky: #C5E2FA;
+    --line: #DFE3EC;
+    --subtle: #C5CBE0;
+    --white: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+  nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .wordmark { font-weight: 700; letter-spacing: 0.06em; font-size: 16px; }
+  .wordmark small { font-weight: 400; color: var(--muted); letter-spacing: 0.01em; margin-left: 8px; font-size: 11px; }
+  .pill {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.22em;
+    padding: 6px 12px; border-radius: 6px;
+    background: rgba(99,155,252,0.08); border: 1px solid rgba(99,155,252,0.2); color: var(--brand);
+  }
+  .pill.off { background: transparent; border-color: var(--line); color: var(--muted); }
+  main { max-width: 680px; margin: 0 auto; padding: 48px 20px 80px; }
+  .eyebrow {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.22em;
+    color: var(--brand); margin-bottom: 12px;
+  }
+  h1 {
+    font-size: clamp(36px, 6vw, 56px); font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; line-height: 0.92; margin-bottom: 12px;
+  }
+  .sub { color: var(--muted); margin-bottom: 36px; }
+  .sub strong { color: var(--ink); }
+  .card {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 28px;
+  }
+  label {
+    display: block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.22em; color: var(--subtle); margin: 20px 0 6px;
+  }
+  label:first-child { margin-top: 0; }
+  select, input, textarea {
+    width: 100%; font-family: inherit; font-size: 15px; color: var(--ink);
+    background: var(--white); border: 1px solid var(--line); border-radius: 10px;
+    padding: 10px 14px; outline: none;
+  }
+  select:focus, input:focus, textarea:focus { border-color: var(--brand); }
+  textarea { min-height: 110px; resize: vertical; line-height: 1.6; }
+  .preview { margin-top: 10px; display: none; }
+  .preview img { max-width: 100%; max-height: 180px; border-radius: 12px; border: 1px solid var(--line); }
+  button {
+    margin-top: 28px; width: 100%;
+    font-family: inherit; font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.22em;
+    background: var(--brand); color: var(--white);
+    border: none; border-radius: 10px; padding: 14px; cursor: pointer;
+  }
+  button:disabled { background: var(--subtle); cursor: not-allowed; }
+  .feedback { margin-top: 16px; font-size: 14px; display: none; }
+  .feedback.ok { color: var(--brand); display: block; }
+  .feedback.err { color: #c0392b; display: block; }
+  .hint {
+    margin-top: 16px; padding: 14px 16px; display: none;
+    border: 1px dashed var(--brand); border-radius: 10px;
+    background: rgba(99,155,252,0.08); font-size: 13px;
+  }
+  .hint code { background: var(--white); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+  .install {
+    margin-bottom: 24px; padding: 14px 16px; display: none;
+    border: 1px solid var(--line); border-radius: 10px; background: var(--white); font-size: 14px;
+  }
+  .install a { color: var(--brand); font-weight: 700; }
+  footer { text-align: center; color: var(--subtle); font-size: 11px; letter-spacing: 0.06em; margin-top: 40px; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="wordmark">SWTCHR<small>by dup.agency</small></div>
+  <div class="pill off" id="statusPill">carregando…</div>
+</nav>
+
+<main>
+  <div class="eyebrow">POC Nuvemshop · Blocos Editáveis</div>
+  <h1>Switch your&nbsp;state</h1>
+  <p class="sub">Escolhe a página, edita o bloco, salva. <strong>Sem ticket. Sem dev. Sem espera.</strong></p>
+
+  <div class="install" id="installBox">
+    Backend no ar, app ainda não instalado. Instala na loja demo:
+    <a id="installLink" href="#" target="_blank" rel="noopener">autorizar app →</a>
+  </div>
+
+  <div class="card">
+    <label for="typeSelect">Destino</label>
+    <select id="typeSelect">
+      <option value="home">Home</option>
+      <option value="category">Categoria</option>
+      <option value="product">Produto</option>
+      <option value="page-inst">Institucional</option>
+      <option value="page-landing">Landing page</option>
+    </select>
+
+    <div id="recordRow" style="display:none">
+      <label for="recordSelect" id="recordLabel">Qual?</label>
+      <select id="recordSelect"></select>
+    </div>
+
+    <label for="imageInput">Imagem (URL)</label>
+    <input id="imageInput" type="url" placeholder="https://…">
+    <div class="preview" id="preview"><img id="previewImg" alt=""></div>
+
+    <label for="textInput">Texto</label>
+    <textarea id="textInput" placeholder="O texto do bloco"></textarea>
+
+    <button id="saveBtn">Salvar e publicar</button>
+    <div class="feedback" id="feedback"></div>
+    <div class="hint" id="homeHint"></div>
+  </div>
+
+  <footer>SWTCHR · POC interna dup.agency · o dado mora na loja, o tema renderiza</footer>
+</main>
+
+<script>
+  const $ = (id) => document.getElementById(id)
+  const state = { connected: false }
+
+  const API_TYPE = { home: 'home', category: 'category', product: 'product', 'page-inst': 'page', 'page-landing': 'page' }
+  const RECORD_LABEL = {
+    category: 'Qual categoria?',
+    product: 'Qual produto?',
+    'page-inst': 'Qual página institucional?',
+    'page-landing': 'Qual landing page?',
+  }
+
+  async function api(path, options) {
+    const res = await fetch(path, options)
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`)
+    return data
+  }
+
+  function setFeedback(kind, msg) {
+    const el = $('feedback')
+    el.className = 'feedback' + (kind ? ' ' + kind : '')
+    el.textContent = msg || ''
+  }
+
+  async function refreshStatus() {
+    const s = await api('/api/status')
+    state.connected = s.connected
+    const pill = $('statusPill')
+    if (s.connected) {
+      pill.className = 'pill'
+      pill.textContent = 'Conectado · loja #' + s.storeId
+      $('installBox').style.display = 'none'
+    } else {
+      pill.className = 'pill off'
+      pill.textContent = s.hasCredentials ? 'App não instalado' : 'Sem credenciais (.env)'
+      if (s.installUrl) {
+        $('installBox').style.display = 'block'
+        $('installLink').href = s.installUrl
+      }
+    }
+    $('saveBtn').disabled = !s.connected
+  }
+
+  async function onTypeChange() {
+    const type = $('typeSelect').value
+    setFeedback('', '')
+    $('homeHint').style.display = 'none'
+    if (type === 'home') {
+      $('recordRow').style.display = 'none'
+      if (state.connected) await loadBlock()
+      return
+    }
+    $('recordRow').style.display = 'block'
+    $('recordLabel').textContent = RECORD_LABEL[type]
+    const select = $('recordSelect')
+    select.innerHTML = '<option>carregando…</option>'
+    if (!state.connected) return
+    try {
+      const rows = await api('/api/targets?type=' + API_TYPE[type])
+      select.innerHTML = rows.length
+        ? rows.map((r) => `<option value="${r.id}">${r.name}</option>`).join('')
+        : '<option value="">— nenhum registro na loja —</option>'
+      if (rows.length) await loadBlock()
+    } catch (err) {
+      select.innerHTML = '<option value="">erro ao listar</option>'
+      setFeedback('err', err.message)
+    }
+  }
+
+  async function loadBlock() {
+    const type = $('typeSelect').value
+    const apiType = API_TYPE[type]
+    const id = $('recordSelect').value
+    if (apiType !== 'home' && !id) return
+    try {
+      const qs = apiType === 'home' ? 'type=home' : `type=${apiType}&id=${id}`
+      const block = await api('/api/block?' + qs)
+      $('imageInput').value = block.image || ''
+      $('textInput').value = block.text || ''
+      updatePreview()
+    } catch (err) {
+      setFeedback('err', err.message)
+    }
+  }
+
+  function updatePreview() {
+    const url = $('imageInput').value.trim()
+    const ok = /^https?:\/\/.+/.test(url)
+    $('preview').style.display = ok ? 'block' : 'none'
+    if (ok) $('previewImg').src = url
+  }
+
+  async function save() {
+    const type = $('typeSelect').value
+    const apiType = API_TYPE[type]
+    const payload = {
+      type: apiType,
+      id: apiType === 'home' ? undefined : $('recordSelect').value,
+      image: $('imageInput').value.trim(),
+      text: $('textInput').value,
+    }
+    $('saveBtn').disabled = true
+    setFeedback('', '')
+    try {
+      const result = await api('/api/block', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      setFeedback('ok', 'Publicado. Recarrega a página da loja — o conteúdo já vem no HTML (confere no view-source).')
+      if (result.hint) {
+        const hint = $('homeHint')
+        hint.style.display = 'block'
+        hint.innerHTML = result.hint.replace(/#(\d+)/, '<code>#$1</code>') + ' Ver <code>theme/INSTALL.md</code>.'
+      }
+    } catch (err) {
+      setFeedback('err', err.message)
+    } finally {
+      $('saveBtn').disabled = !state.connected
+    }
+  }
+
+  $('typeSelect').addEventListener('change', onTypeChange)
+  $('recordSelect').addEventListener('change', loadBlock)
+  $('imageInput').addEventListener('input', updatePreview)
+  $('saveBtn').addEventListener('click', save)
+
+  refreshStatus()
+    .then(onTypeChange)
+    .catch((err) => setFeedback('err', err.message))
+  if (new URLSearchParams(location.search).get('connected')) {
+    setFeedback('ok', 'App instalado e token salvo. Bora editar.')
+  }
+</script>
+</body>
+</html>

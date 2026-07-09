@@ -1,0 +1,11 @@
+.env
+.data/
+node_modules/
+.DS_Store
+panel/dist/
+
+# tooling e workspace de tema (contêm credencial .nuvem e node_modules)
+.tooling/
+theme-ipanema/
+.nuvem
+theme-morelia/
