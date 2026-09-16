@@ -143,14 +143,11 @@
     /* JÁ EM PRODUÇÃO — V3 Spec */
     .proof { padding: 100px 40px; background: var(--paper); }
     .proof .spec-head { margin-bottom: 48px; }
-    .proof-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 64px; align-items: center; }
+    .proof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 64px; }
     .kpi { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--line); }
     .kpi span { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
     .kpi strong { font-size: clamp(32px, 4vw, 52px); font-weight: 700; line-height: 1; }
     .kpi strong.kpi-text { font-size: clamp(18px, 1.9vw, 24px); letter-spacing: 0.02em; text-transform: uppercase; text-align: right; }
-    .quote { border-left: 2px solid var(--blue); padding-left: 36px; }
-    .quote p { font-size: clamp(20px, 2.4vw, 30px); line-height: 1.45; font-style: italic; }
-    .quote cite { display: block; margin-top: 26px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 700; font-style: normal; }
 
     /* FUNCIONALIDADES — V1 Fiel */
     .features { background: var(--paper); padding: 120px 48px; border-top: 1px solid var(--line); }
@@ -228,7 +225,8 @@
       .stat, .stat:first-child, .stat:last-child { padding: 32px 0; border-right: none; border-bottom: 1px solid var(--line); }
       .stat:last-child { border-bottom: none; }
 
-      .what .wrap, .proof-grid, .cta .wrap { grid-template-columns: 1fr; gap: 48px; }
+      .what .wrap, .cta .wrap { grid-template-columns: 1fr; gap: 48px; }
+      .proof-grid { grid-template-columns: 1fr; gap: 0; }
       .feat-grid { grid-template-columns: 1fr 1fr; }
 
       .step { grid-template-columns: 64px 1fr; gap: 12px 20px; padding: 32px 0; }
@@ -242,7 +240,6 @@
       .nav .brand span { display: none; }
       .badge-lead { display: none; }
       .feat-grid { grid-template-columns: 1fr; }
-      .quote { padding-left: 20px; }
       .cta-form { max-width: none; }
     }
   </style>
@@ -372,15 +369,8 @@
         <span class="aside">Prova de campo</span>
       </div>
       <div class="proof-grid">
-        <div data-reveal>
-          <div class="kpi"><span>Lojas ativas</span><strong>2</strong></div>
-          <div class="kpi"><span>Blocos no catálogo</span><strong>[X]</strong></div>
-          <div class="kpi"><span>Plataformas</span><strong class="kpi-text">VTEX IO + Nuvemshop</strong></div>
-        </div>
-        <blockquote class="quote" data-reveal data-reveal-delay="150">
-          <p>"[frase real do cliente sobre o que mudou depois do SWTCHR]"</p>
-          <cite>— [Nome], [Cargo] · [Nome da loja]</cite>
-        </blockquote>
+        <div class="kpi" data-reveal><span>Lojas ativas</span><strong>2</strong></div>
+        <div class="kpi" data-reveal data-reveal-delay="150"><span>Plataformas</span><strong class="kpi-text">VTEX IO + Nuvemshop</strong></div>
       </div>
     </div>
   </section>
