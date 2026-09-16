@@ -3,493 +3,510 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SWTCHR — Em Breve</title>
+  <title>SWTCHR — Switch Your State</title>
+  <meta name="description" content="O SWTCHR coloca o controle das seções da sua loja direto nas suas mãos — sem abrir chamado, sem esperar agência, sem código.">
+  <meta property="og:title" content="SWTCHR — Switch Your State">
+  <meta property="og:description" content="Sua loja não deveria depender de um ticket pra mudar de cara.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://swtchr.io">
+  <meta property="og:image" content="assets/astronauta.webp">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="assets/astronauta.webp" fetchpriority="high">
 
   <style>
+    :root {
+      --ink: #0D1015;
+      --paper: #F9FAFC;
+      --mist: #EEF1F6;
+      --line: #DFE3EC;
+      --muted: #8F94A7;
+      --body: #5A5F6E;
+      --blue: #639BFC;
+      --blue-deep: #3F7BE0;
+      --ice: #C5E2FA;
+      --ease: cubic-bezier(0.2, 0, 0, 1);
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+    body { font-family: "Space Grotesk", system-ui, sans-serif; background: var(--paper); color: var(--ink); -webkit-font-smoothing: antialiased; }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+    input, button { font: inherit; }
+    input:focus { outline: none; }
 
-    html, body {
-      height: 100%;
-      overflow: hidden;
-      background: #F9FAFC;
-      font-family: "Space Grotesk", system-ui, -apple-system, sans-serif;
+    .i { width: 1em; height: 1em; fill: currentColor; flex: none; display: inline-block; vertical-align: middle; }
+
+    @keyframes sgFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+    @keyframes sgFloatSlow { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes sgPulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+    .wrap { max-width: 1120px; margin: 0 auto; }
+    .wrap-wide { max-width: 1200px; margin: 0 auto; }
+
+    .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--blue); margin-bottom: 18px; }
+    .h2 { font-size: clamp(26px, 3vw, 40px); font-weight: 700; line-height: 1.1; letter-spacing: 0.02em; text-transform: uppercase; }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: opacity 150ms, transform 100ms; }
+    .btn:hover { opacity: 0.88; }
+    .btn:active { transform: scale(0.97); }
+    .btn-blue { background: var(--blue); color: var(--ink); }
+
+    /* NAV */
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; background: rgba(249,250,252,0.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid rgba(13,16,21,0.06); }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand img { height: 16px; width: auto; }
+    .nav .brand img { filter: invert(1); }
+    .brand span { font-size: 11px; font-weight: 300; color: var(--muted); letter-spacing: 0.04em; }
+    .nav-links { display: flex; align-items: center; gap: 30px; }
+    .nav-link { font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; transition: color 150ms; }
+    .nav-link:hover { color: var(--ink); }
+    .nav-cta { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 6px; background: var(--ink); color: var(--paper); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; transition: opacity 150ms; }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* HERO — V1 Fiel */
+    .hero { position: relative; overflow: hidden; padding: 120px 32px 80px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; background: var(--paper); }
+    .hero-glitch { position: absolute; object-fit: cover; opacity: 0.1; mix-blend-mode: color-burn; pointer-events: none; z-index: 0; }
+    .hero-glitch.g1 { left: -60px; bottom: 0; width: 440px; height: 540px; }
+    .hero-glitch.g2 { right: -40px; bottom: 40px; width: 360px; height: 360px; }
+    .hero-copy { position: relative; z-index: 5; text-align: center; max-width: 920px; }
+    .badge { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 28px; padding: 7px 14px; border: 1px solid var(--line); border-radius: 6px; background: rgba(255,255,255,0.6); }
+    .badge i { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); display: block; animation: sgPulse 2.4s ease-in-out infinite; }
+    .badge span { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+    .hero h1 { font-size: clamp(34px, 5vw, 66px); font-weight: 700; line-height: 1.04; letter-spacing: 0.02em; text-transform: uppercase; text-wrap: balance; }
+    .hero-lead { margin: 26px auto 0; max-width: 560px; font-size: 17px; line-height: 1.65; color: var(--body); text-wrap: pretty; }
+    .stage { position: relative; z-index: 2; width: 100%; max-width: 1120px; margin-top: 24px; display: flex; justify-content: center; align-items: flex-end; min-height: 540px; }
+    .stage-astro { height: 560px; max-height: 60vh; width: auto; object-fit: contain; position: relative; z-index: 2; animation: sgFloat 7s ease-in-out infinite; filter: saturate(0.85); }
+    .chip { position: absolute; z-index: 4; background: rgba(255,255,255,0.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.7); border-radius: 8px; padding: 10px 14px; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+    .chip.c1 { left: 2%; top: 14%; }
+    .chip.c2 { right: 1%; top: 20%; max-width: 180px; line-height: 1.5; }
+    .chip.c3 { left: 5%; bottom: 16%; background: rgba(99,155,252,0.12); border-color: rgba(99,155,252,0.35); color: var(--blue-deep); }
+    .chip.c4 { right: 4%; bottom: 22%; font-size: 12px; font-weight: 400; letter-spacing: 0.04em; text-transform: none; color: var(--body); }
+    .deco-icons { position: absolute; right: 6%; top: 46%; z-index: 4; display: flex; gap: 14px; padding: 0 16px; height: 52px; align-items: center; background: rgba(255,255,255,0.5); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.6); border-radius: 8px; color: var(--muted); font-size: 20px; }
+    .deco-coords { position: absolute; left: 3%; bottom: 6%; z-index: 4; display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
+    .deco-coords b { display: flex; gap: 4px; }
+    .deco-coords b i { width: 6px; height: 6px; border-radius: 50%; display: block; }
+    .deco-finger { position: absolute; right: 14%; bottom: 8%; z-index: 4; font-size: 30px; color: var(--muted); }
+    .hero-cta { position: relative; z-index: 5; text-align: center; margin-top: 8px; }
+    .hero-cta .btn { padding: 16px 34px; }
+    .hero-cta p { margin-top: 16px; font-size: 13px; font-weight: 300; color: var(--muted); letter-spacing: 0.02em; }
+
+    /* SECTION HEAD — V3 Spec */
+    .spec-head { display: flex; align-items: baseline; gap: 22px; border-bottom: 1px solid var(--ink); padding-bottom: 16px; }
+    .spec-head .num { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--blue); }
+    .spec-head .ttl { font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; }
+    .spec-head .aside { margin-left: auto; font-size: 11px; font-weight: 300; letter-spacing: 0.06em; color: var(--muted); text-align: right; }
+
+    /* O PROBLEMA — V3 Spec */
+    .problem { padding: 100px 40px; background: var(--mist); }
+    .problem .spec-head { margin-bottom: 14px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .stat { padding: 44px 36px 0; border-right: 1px solid var(--line); }
+    .stat:first-child { padding-left: 0; }
+    .stat:last-child { padding-right: 0; border-right: none; }
+    .stat-num { font-size: clamp(64px, 9vw, 128px); font-weight: 700; letter-spacing: -0.03em; line-height: 0.9; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .stat:last-child .stat-num { font-size: clamp(56px, 8vw, 108px); color: var(--blue); }
+    .stat p { margin-top: 24px; font-size: 13px; line-height: 1.6; color: var(--muted); max-width: 240px; }
+
+    /* O QUE É — V2 Mission */
+    .what { background: var(--ink); color: #DFE3EC; padding: 120px 48px; }
+    .what .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+    .what .h2 { color: #fff; }
+    .what-lead { margin-top: 24px; font-size: 15px; line-height: 1.7; color: var(--muted); max-width: 480px; }
+    .what-punch { margin-top: 18px; font-size: 15px; line-height: 1.7; color: #fff; font-weight: 500; }
+    .what-list { margin-top: 32px; display: flex; flex-direction: column; gap: 14px; list-style: none; }
+    .what-list li { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+    .what-list .i { color: var(--blue); font-size: 16px; }
+    .editor { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); }
+    .editor-bar { padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 8px; }
+    .editor-bar i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); display: block; }
+    .editor-bar i:first-child { background: var(--blue); }
+    .editor-bar span { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-left: 6px; }
+    .editor-body { padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); }
+    .row.on { border-color: rgba(99,155,252,0.35); background: rgba(99,155,252,0.1); }
+    .row.off { opacity: 0.45; }
+    .row-l { display: flex; align-items: center; gap: 10px; }
+    .row-l .i { font-size: 16px; color: var(--muted); }
+    .row.on .row-l .i { color: var(--blue); }
+    .row-name { font-size: 13px; font-weight: 600; color: #DFE3EC; }
+    .row.on .row-name { color: #fff; }
+    .row-meta { font-size: 10px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+    .row-r { display: flex; align-items: center; gap: 8px; }
+    .tag { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: rgba(99,155,252,0.15); border: 1px solid rgba(99,155,252,0.4); color: var(--blue); }
+    .row.off .tag { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.12); color: var(--muted); }
+    .grip { color: rgba(255,255,255,0.25); cursor: grab; }
+
+    /* JÁ EM PRODUÇÃO — V3 Spec */
+    .proof { padding: 100px 40px; background: var(--paper); }
+    .proof .spec-head { margin-bottom: 48px; }
+    .proof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 64px; }
+    .kpi { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+    .kpi span { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .kpi strong { font-size: clamp(32px, 4vw, 52px); font-weight: 700; line-height: 1; }
+    .kpi strong.kpi-text { font-size: clamp(18px, 1.9vw, 24px); letter-spacing: 0.02em; text-transform: uppercase; text-align: right; }
+
+    /* FUNCIONALIDADES — V1 Fiel */
+    .features { background: var(--paper); padding: 120px 48px; border-top: 1px solid var(--line); }
+    .features .intro { margin-bottom: 56px; max-width: 620px; }
+    .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .feat { padding: 34px 30px; background: #fff; display: flex; flex-direction: column; gap: 14px; }
+    .feat .i { font-size: 26px; color: var(--blue); }
+    .feat h3 { font-size: 14px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+    .feat p { font-size: 13px; line-height: 1.6; color: var(--muted); }
+
+    /* COMO FUNCIONA — V3 Spec */
+    .how { padding: 100px 40px; background: var(--mist); }
+    .how .spec-head { margin-bottom: 14px; }
+    .step { display: grid; grid-template-columns: 120px 1fr 1.4fr; gap: 32px; align-items: start; padding: 40px 0; border-bottom: 1px solid var(--line); }
+    .step-n { font-size: clamp(40px, 5vw, 72px); font-weight: 700; line-height: 0.8; letter-spacing: -0.02em; }
+    .step:last-child .step-n { color: var(--blue); }
+    .step h3 { font-size: 16px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding-top: 6px; }
+    .step p { font-size: 14px; line-height: 1.65; color: var(--body); padding-top: 6px; }
+
+    /* CTA FINAL — V2 Mission */
+    .cta { position: relative; overflow: hidden; background-color: var(--ink); color: #fff; padding: 110px 48px 120px; background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 64px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 64px); }
+    .cta .wrap { max-width: 1080px; display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 56px; align-items: center; }
+    .cta-visual { position: relative; display: flex; justify-content: center; }
+    .bracket { position: absolute; width: 24px; height: 24px; border: 0 solid var(--blue); }
+    .bracket.tl { top: 0; left: 14%; border-top-width: 2px; border-left-width: 2px; }
+    .bracket.br { bottom: 0; right: 14%; border-bottom-width: 2px; border-right-width: 2px; }
+    .cta-astro { height: 360px; width: auto; object-fit: contain; animation: sgFloatSlow 6s ease-in-out infinite; filter: saturate(0.7) brightness(0.96); }
+    .cta h2 { font-size: clamp(28px, 3.4vw, 48px); font-weight: 700; line-height: 1.05; letter-spacing: 0.02em; text-transform: uppercase; text-wrap: balance; }
+    .cta-lead { margin-top: 20px; font-size: 15px; line-height: 1.65; color: var(--muted); max-width: 460px; }
+    .cta-form { margin-top: 32px; display: flex; flex-direction: column; gap: 12px; max-width: 400px; }
+    .cta-form input { padding: 15px 18px; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; background: rgba(255,255,255,0.03); font-size: 14px; color: #fff; transition: border-color 150ms; }
+    .cta-form input::placeholder { color: var(--muted); }
+    .cta-form input:focus { border-color: var(--blue); }
+    .cta-form .btn { margin-top: 4px; padding: 17px 28px; border-radius: 8px; letter-spacing: 0.1em; }
+    .cta-note { margin-top: 16px; font-size: 13px; font-weight: 300; color: var(--muted); }
+
+    /* FOOTER */
+    .footer { background: var(--ink); padding: 32px 48px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.08); }
+    .footer .brand img { height: 15px; }
+    .footer-r { display: flex; align-items: center; gap: 24px; font-size: 11px; color: var(--muted); }
+    .footer-r a { letter-spacing: 0.1em; text-transform: uppercase; transition: color 150ms; }
+    .footer-r a:hover { color: #fff; }
+    .footer-r span { color: rgba(143,148,167,0.5); }
+
+    /* MOTION */
+    .js [data-reveal] { opacity: 0; transform: translateY(26px); transition: opacity 650ms var(--ease), transform 650ms var(--ease); }
+    .js [data-reveal].is-in { opacity: 1; transform: none; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation: none !important; }
+      .js [data-reveal] { opacity: 1; transform: none; transition: none; }
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    /* RESPONSIVO */
+    @media (max-width: 960px) {
+      .nav { padding: 0 20px; }
+      .nav-link { display: none; }
+
+      .hero { padding: 104px 20px 64px; min-height: 0; }
+      .hero-glitch { display: none; }
+      .stage { flex-wrap: wrap; gap: 8px; min-height: 0; }
+      .stage-astro { order: -1; width: 100%; height: auto; max-height: none; margin-bottom: 12px; }
+      .chip { position: static; max-width: none !important; }
+      .deco-icons, .deco-coords, .deco-finger { display: none; }
+      .hero-cta { margin-top: 32px; }
+
+      .problem, .proof, .how { padding: 72px 20px; }
+      .what, .features, .cta { padding: 80px 20px; }
+
+      .spec-head { flex-wrap: wrap; row-gap: 6px; }
+      .spec-head .aside { margin-left: 0; width: 100%; text-align: left; }
+
+      .stats { grid-template-columns: 1fr; }
+      .stat, .stat:first-child, .stat:last-child { padding: 32px 0; border-right: none; border-bottom: 1px solid var(--line); }
+      .stat:last-child { border-bottom: none; }
+
+      .what .wrap, .cta .wrap { grid-template-columns: 1fr; gap: 48px; }
+      .proof-grid { grid-template-columns: 1fr; gap: 0; }
+      .feat-grid { grid-template-columns: 1fr 1fr; }
+
+      .step { grid-template-columns: 64px 1fr; gap: 12px 20px; padding: 32px 0; }
+      .step p { grid-column: 2; padding-top: 0; }
+
+      .cta-astro { height: 260px; }
+      .footer { padding: 28px 20px; }
     }
 
-    #em-loader {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 200;
-      width: 200px;
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #em-loader-spinner {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 2px solid rgba(99, 155, 252, 0.15);
-      border-top-color: #639BFC;
-      animation: spin 0.9s linear infinite;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    #em-wrap {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    /* ── Nav ── */
-    #em-nav {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      z-index: 20;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 56px;
-      background: #ffffff;
-      border-bottom: 1px solid rgba(13, 16, 21, 0.06);
-      animation: fadeIn 0.5s ease-out both;
-    }
-
-    #em-nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    #em-nav-logo svg {
-      height: 17px;
-      width: auto;
-      filter: invert(1);
-    }
-
-    #em-nav-by {
-      font-size: 11px;
-      font-weight: 300;
-      color: #8F94A7;
-      letter-spacing: 0.05em;
-    }
-
-    #em-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 5px 14px;
-      border-radius: 6px;
-      background: rgba(99, 155, 252, 0.08);
-      border: 1px solid rgba(99, 155, 252, 0.2);
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: #639BFC;
-    }
-
-    #em-badge-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: #639BFC;
-      display: block;
-      flex-shrink: 0;
-    }
-
-    /* ── Headline ── */
-    #em-headline {
-      position: absolute;
-      left: 56px;
-      top: 30%;
-      transform: translateY(-52%);
-      z-index: 10;
-      animation: slideUp 0.8s cubic-bezier(0.2, 0, 0, 1) 0.15s both;
-    }
-
-    #em-eyebrow {
-      display: block;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: #639BFC;
-      margin-bottom: 20px;
-    }
-
-    #em-headline h1 {
-      font-size: clamp(80px, 8.5vw, 128px);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      line-height: 0.92;
-      color: #0D1015;
-    }
-
-    #em-divider {
-      width: 40px;
-      height: 1px;
-      background: #DFE3EC;
-      margin: 28px 0;
-    }
-
-    #em-headline p {
-      font-size: 15px;
-      font-weight: 400;
-      line-height: 1.7;
-      color: #8F94A7;
-      max-width: 280px;
-      letter-spacing: 0.01em;
-    }
-
-    /* ── Card ── */
-    #em-card {
-      position: absolute;
-      right: 56px;
-      top: 30%;
-      transform: translateY(-60%);
-      z-index: 10;
-      width: 270px;
-      padding: 24px 26px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.55);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      animation: slideUp 0.8s cubic-bezier(0.2, 0, 0, 1) 0.25s both;
-    }
-
-    #em-card p {
-      font-size: 14px;
-      line-height: 1.75;
-      letter-spacing: 0.03em;
-      color: #8F94A7;
-    }
-
-    #em-card strong {
-      color: #0D1015;
-      font-weight: 700;
-    }
-
-    /* ── Decorative icon top-right ── */
-    #em-icon-arrows {
-      position: absolute;
-      right: 56px;
-      top: calc(64px + 48px);
-      z-index: 10;
-      font-size: 36px;
-      color: #DFE3EC;
-      animation: fadeIn 0.6s ease-out 0.5s both;
-    }
-
-    /* ── Bottom icons ── */
-    #em-icons-dec {
-      position: absolute;
-      left: 56px;
-      top: 88px;
-      z-index: 10;
-      display: flex;
-      animation: fadeIn 0.6s ease-out 0.6s both;
-    }
-
-    #em-icons-dec i {
-      font-size: 22px;
-      color: #DFE3EC;
-    }
-
-    #em-icons-dec i + i {
-      padding-left: 8px;
-    }
-
-    /* ── Coords ── */
-    #em-coords {
-      position: absolute;
-      left: 56px;
-      bottom: 52px;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      animation: fadeIn 0.6s ease-out 0.55s both;
-    }
-
-    #em-palette {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .em-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      display: block;
-    }
-
-    #em-coords-label {
-      font-size: 11px;
-      color: #ffffff;
-      letter-spacing: 0.06em;
-    }
-
-    /* ── Bottom right ── */
-    #em-bottom-right {
-      position: absolute;
-      right: 56px;
-      bottom: 52px;
-      z-index: 10;
-      font-size: 11px;
-      color: #C5CBE0;
-      letter-spacing: 0.06em;
-      animation: fadeIn 0.6s ease-out 0.7s both;
-    }
-
-    /* ── Astronaut / video ── */
-    #em-astronaut {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 5;
-      width: 600px;
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-      pointer-events: none;
-    }
-
-    #em-video,
-    #em-frame {
-      width: 100vw;
-      bottom: -24px;
-      position: relative;
-    }
-
-    #em-frame { display: none; }
-
-    /* ── Mobile ── */
-    @media (max-width: 768px) {
-      #em-nav          { padding: 0 24px; }
-      #em-headline     { left: 24px; right: 24px; top: 76px; transform: none; }
-      #em-headline h1  { font-size: clamp(52px, 14vw, 72px); }
-      #em-headline p   { max-width: 100%; font-size: 14px; color: #fff; }
-      #em-coords-label { color: #fff; }
-      #em-card         { display: none; }
-      #em-icon-arrows  { display: none; }
-      #em-icons-dec    { display: none; }
-      #em-coords       { left: 24px; bottom: 20px; flex-direction: column; align-items: flex-start; gap: 6px; }
-      #em-bottom-right { display: none; }
-      #em-astronaut    { top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; transform: none; z-index: 1; }
-      #em-video,
-      #em-frame        { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; bottom: auto; }
+    @media (max-width: 560px) {
+      .nav .brand span { display: none; }
+      .badge-lead { display: none; }
+      .feat-grid { grid-template-columns: 1fr; }
+      .cta-form { max-width: none; }
     }
   </style>
 </head>
 <body>
-  <div id="em-wrap">
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><symbol id="i-align-left" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M192 800v-704c0-17.673-14.327-32-32-32s-32 14.327-32 32v0 704c0 17.673 14.327 32 32 32s32-14.327 32-32v0zM256 544v160c0 35.346 28.654 64 64 64v0h384c35.346 0 64-28.654 64-64v0-160c0-35.346-28.654-64-64-64v0h-384c-35.346 0-64 28.654-64 64v0zM320 544h384v160h-384zM928 352v-160c0-35.346-28.654-64-64-64v0h-544c-35.346 0-64 28.654-64 64v0 160c0 35.346 28.654 64 64 64v0h544c35.346 0 64-28.654 64-64v0zM864 192v160h-544v-160h544z"/></symbol><symbol id="i-arrow-right" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M886.64 425.36l-288-288c-5.794-5.794-13.799-9.378-22.64-9.378-17.683 0-32.018 14.335-32.018 32.018 0 8.841 3.584 16.846 9.378 22.64l233.4 233.36h-626.76c-17.673 0-32 14.327-32 32s14.327 32 32 32v0h626.76l-233.4 233.36c-5.794 5.794-9.378 13.799-9.378 22.64 0 17.683 14.335 32.018 32.018 32.018 8.841 0 16.846-3.584 22.64-9.378v0l288-288c5.798-5.792 9.385-13.797 9.385-22.64s-3.587-16.848-9.385-22.64v0z"/></symbol><symbol id="i-arrows-clockwise" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M896 768v-192c0-17.673-14.327-32-32-32v0h-192c-17.673 0-32 14.327-32 32s14.327 32 32 32v0h114.76l-58.52 58.52c-57.406 57.66-136.758 93.43-224.465 93.72h-1.855c-0.221 0.001-0.483 0.001-0.746 0.001-86.795 0-165.47-34.764-222.862-91.127l0.048 0.047c-5.702-5.333-13.387-8.608-21.836-8.608-17.673 0-32 14.327-32 32 0 8.708 3.479 16.604 9.122 22.374l-0.006-0.006c69.165 67.643 163.909 109.38 268.402 109.38 106.073 0 202.101-43.008 271.596-112.538l0.002-0.002 58.36-58.52v114.76c0 17.673 14.327 32 32 32s32-14.327 32-32v0zM745.64 226.84c-57.63-56.332-136.559-91.087-223.604-91.087-88.366 0-168.367 35.818-226.276 93.727l-58.52 58.52h114.76c17.673 0 32 14.327 32 32s-14.327 32-32 32v0h-192c-17.673 0-32-14.327-32-32v0-192c0-17.673 14.327-32 32-32s32 14.327 32 32v0 114.76l58.52-58.52c68.889-69.226 164.139-112.163 269.42-112.48h2.18c0.292-0.001 0.637-0.001 0.983-0.001 104.133 0 198.52 41.728 267.352 109.375l-0.055-0.054c5.638 5.764 9.116 13.66 9.116 22.368 0 17.673-14.327 32-32 32-8.45 0-16.135-3.275-21.854-8.625l0.018 0.017z"/></symbol><symbol id="i-cell-signal-full" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M672 672v-512c0-17.673-14.327-32-32-32s-32 14.327-32 32v0 512c0 17.673 14.327 32 32 32s32-14.327 32-32v0zM800 864c-17.673 0-32-14.327-32-32v0-672c0-17.673 14.327-32 32-32s32 14.327 32 32v0 672c0 17.673-14.327 32-32 32v0zM480 544c-17.673 0-32-14.327-32-32v0-352c0-17.673 14.327-32 32-32s32 14.327 32 32v0 352c0 17.673-14.327 32-32 32v0zM320 384c-17.673 0-32-14.327-32-32v0-192c0-17.673 14.327-32 32-32s32 14.327 32 32v0 192c0 17.673-14.327 32-32 32v0zM160 224c-17.673 0-32-14.327-32-32v0-32c0-17.673 14.327-32 32-32s32 14.327 32 32v0 32c0 17.673-14.327 32-32 32v0z"/></symbol><symbol id="i-chat-circle" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M512 864c-0.027 0-0.059 0-0.091 0-229.75 0-416-186.25-416-416 0-71.565 18.071-138.91 49.9-197.72l-1.089 2.2-45.4-136.2c-2.084-6.042-3.287-13.004-3.287-20.247 0-35.346 28.654-64 64-64 7.243 0 14.205 1.203 20.698 3.421l-0.45-0.134 136.2 45.4c56.567-30.683 123.852-48.72 195.349-48.72 229.75 0 416 186.25 416 416 0 229.69-186.152 415.903-415.82 416h-0.009zM512 96c-0.071 0-0.155 0-0.239 0-64.812 0-125.526 17.542-177.654 48.137l1.654-0.897c-4.602 2.714-10.141 4.318-16.053 4.318-3.615 0-7.091-0.6-10.332-1.705l0.225 0.067-149.6-49.92 49.88 149.6c1.048 3.029 1.653 6.519 1.653 10.151 0 5.895-1.594 11.417-4.374 16.16l0.082-0.151c-29.734 50.544-47.298 111.341-47.298 176.24 0 194.404 157.596 352 352 352s352-157.596 352-352c0-194.384-157.563-351.967-351.939-352h-0.003z"/></symbol><symbol id="i-fingerprint" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M288 448c0.001-0.436 0.002-0.953 0.002-1.469 0-87.622-20.926-170.355-58.054-243.476l1.412 3.066c-5.185-11.094-16.251-18.643-29.079-18.643-17.673 0-32 14.327-32 32 0 5.538 1.407 10.748 3.883 15.291l-0.084-0.168c31.479 61.787 49.922 134.751 49.922 212.023 0 0.484-0.001 0.969-0.002 1.453v-0.075c0 0.148 0 0.324 0 0.499 0 90.537 41.934 171.279 107.439 223.865l0.562 0.436c5.426 4.373 12.404 7.020 20 7.020 17.673 0 32-14.327 32-32 0-10.077-4.658-19.066-11.938-24.932l-0.062-0.048c-51.384-41.216-84-103.998-84-174.399 0-0.155 0-0.31 0-0.466v0.024zM512 480c-17.673 0-32-14.327-32-32v0c-0.007-130.803-34.113-253.639-93.912-360.105l1.912 3.705c-2.526-4.474-4.014-9.823-4.014-15.52 0-17.681 14.333-32.014 32.014-32.014 11.984 0 22.43 6.585 27.917 16.333l0.083 0.161c62.919 111.713 99.99 245.246 100 387.437v0.003c0 17.673-14.327 32-32 32v0zM512 608c-88.366 0-160-71.634-160-160v0c0-17.673 14.327-32 32-32s32 14.327 32 32v0c0 53.019 42.981 96 96 96s96-42.981 96-96v0c0.002-0.663 0.003-1.448 0.003-2.233 0-132.873-30.262-258.678-84.269-370.899l2.226 5.132c-1.928-4.001-3.054-8.699-3.054-13.66 0-17.714 14.36-32.074 32.074-32.074 12.753 0 23.767 7.443 28.937 18.221l0.083 0.193c55.544 114.971 88.004 250.025 88.004 392.661 0 0.935-0.001 1.869-0.004 2.804v-0.144c0 88.366-71.634 160-160 160v0zM512 864c-229.65-0.25-415.75-186.35-416-415.976v-0.024c0-0.155 0-0.338 0-0.522 0-41.864-7.328-82.016-20.772-119.244l0.771 2.446c-1.158-3.174-1.827-6.839-1.827-10.66 0-17.677 14.33-32.007 32.007-32.007 13.856 0 25.656 8.805 30.11 21.124l0.070 0.223c14.979 41.148 23.64 88.647 23.64 138.17 0 0.165 0 0.331 0 0.496v-0.026c0 194.404 157.596 352 352 352s352-157.596 352-352v0c0-0.072 0-0.159 0-0.246 0-76.973-7.703-152.146-22.381-224.792l1.221 7.237c-0.386-1.866-0.607-4.009-0.607-6.205 0-15.482 10.995-28.396 25.602-31.36l0.206-0.035c1.862-0.378 4.005-0.596 6.197-0.6h0.003c15.465 0.017 28.36 11.002 31.325 25.594l0.035 0.206c14.245 69.194 22.4 148.716 22.4 230.144 0 0.020 0 0.040 0 0.059v-0.003c-0.273 229.641-186.359 415.727-415.974 416h-0.026zM377.6 351.32c-1.877 0.391-4.034 0.615-6.243 0.615-15.413 0-28.281-10.897-31.32-25.407l-0.036-0.208c-14.192-68.549-38.026-129.379-70.383-184.61l1.543 2.85c-2.695-4.59-4.286-10.109-4.286-16 0-17.677 14.33-32.006 32.006-32.006 11.786 0 22.083 6.37 27.638 15.855l0.082 0.151c34.055 57.927 60.373 125.202 75.247 196.674l0.753 4.326c0.411 1.923 0.646 4.133 0.646 6.397 0 15.424-10.913 28.299-25.438 31.327l-0.208 0.036zM512 736c-12.693-0.003-25.193-0.817-37.454-2.393l1.454 0.153c-15.512-2.394-27.249-15.649-27.249-31.645 0-17.673 14.327-32 32-32 1.144 0 2.275 0.060 3.388 0.177l-0.139-0.012c8.312 1.091 17.923 1.714 27.68 1.714 123.774 0 224.135-100.246 224.32-223.977v-0.017c-0.010-43.72-2.8-86.776-8.204-129.016l0.524 5.016c-0.181-1.278-0.284-2.755-0.284-4.256 0-16.25 12.113-29.672 27.803-31.727l0.162-0.017c1.201-0.153 2.59-0.24 4-0.24v0c16.234 0.036 29.627 12.155 31.663 27.839l0.017 0.161c5.094 39.14 8.001 84.41 8.001 130.359 0 0.577 0 1.154-0.001 1.73v-0.089c-0.045 158.976-128.749 287.876-287.646 288.24h-0.034zM743.72 223c-2.404 0.647-5.164 1.019-8.011 1.019-14.837 0-27.316-10.098-30.939-23.796l-0.050-0.223c-5.84-22.76-12.6-45.6-20-68-1.064-3.051-1.679-6.569-1.679-10.23 0-13.978 8.963-25.863 21.455-30.222l0.225-0.068c3.028-1.065 6.519-1.68 10.153-1.68 0.016 0 0.033 0 0.049 0h-0.003c14.028 0.011 25.943 9.047 30.253 21.615l0.067 0.225c8 23.68 15.16 48 21.4 72.2 0.671 2.446 1.056 5.254 1.056 8.153 0 14.807-10.057 27.265-23.712 30.916l-0.224 0.051z"/></symbol><symbol id="i-flow-arrow" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M982.64 662.64l-128 128c-5.794 5.794-13.799 9.378-22.64 9.378-17.683 0-32.018-14.335-32.018-32.018 0-8.841 3.584-16.846 9.378-22.64v0l73.4-73.36h-50.76c-197.32 0-244.2-112.48-285.52-211.68-37.52-90.040-67.68-162.36-197.92-171.36-15.792 73.070-79.878 127.020-156.564 127.020-88.366 0-160-71.634-160-160s71.634-160 160-160c77.389 0 141.946 54.944 156.79 127.951l0.175 1.028c173.040 10.6 217.36 116.6 256.56 210.76 40.12 96.28 71.8 172.28 226.48 172.28h50.76l-73.4-73.36c-5.794-5.794-9.378-13.799-9.378-22.64 0-17.683 14.335-32.018 32.018-32.018 8.841 0 16.846 3.584 22.64 9.378l128 128c5.798 5.792 9.385 13.797 9.385 22.64s-3.587 16.848-9.385 22.64v0zM192 160c-53.019 0-96 42.981-96 96s42.981 96 96 96c53.019 0 96-42.981 96-96v0c0-53.019-42.981-96-96-96v0z"/></symbol><symbol id="i-house" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M877.24 525.28l-320 320c-11.58 11.573-27.574 18.73-45.24 18.73s-33.66-7.157-45.24-18.731l-320-320c-11.588-11.504-18.76-27.441-18.76-45.054 0-0.079 0-0.159 0-0.238v0.012-384c0-17.673 14.327-32 32-32v0h256c17.673 0 32 14.327 32 32v0 224h128v-224c0-17.673 14.327-32 32-32v0h256c17.673 0 32 14.327 32 32v0 384c0 0.067 0 0.147 0 0.226 0 17.613-7.173 33.55-18.757 45.050l-0.004 0.004zM832 128h-192v224c0 17.673-14.327 32-32 32v0h-192c-17.673 0-32-14.327-32-32v0-224h-192v352l320 320 320-320z"/></symbol><symbol id="i-image" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M864 800h-704c-35.346 0-64-28.654-64-64v0-576c0-35.346 28.654-64 64-64v0h704c35.346 0 64 28.654 64 64v0 576c0 35.346-28.654 64-64 64v0zM864 736v-411l-104.28 104.24c-11.582 11.585-27.584 18.75-45.26 18.75s-33.678-7.166-45.26-18.75l-80-80-176 176c-11.58 11.573-27.574 18.73-45.24 18.73s-33.66-7.157-45.24-18.731l-162.72-162.72v373.48zM160 272l208 208 320-320h-528zM864 160h-85.48l-144 144 80 80 149.48-149.52v-74.48zM576 560c0 26.51 21.49 48 48 48s48-21.49 48-48c0-26.51-21.49-48-48-48v0c-26.51 0-48 21.49-48 48v0z"/></symbol><symbol id="i-magnifying-glass" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M918.64 86.64l-200.28 200.24c50.79 60.647 81.636 139.503 81.636 225.564 0 194.647-157.793 352.44-352.44 352.44s-352.44-157.793-352.44-352.44c0-194.647 157.793-352.44 352.44-352.44 86.061 0 164.917 30.846 226.116 82.086l-0.552-0.45 200.24-200.28c5.794-5.794 13.799-9.378 22.64-9.378 17.683 0 32.018 14.335 32.018 32.018 0 8.841-3.584 16.846-9.378 22.64v0zM160 512c0 159.058 128.942 288 288 288s288-128.942 288-288c0-159.058-128.942-288-288-288v0c-158.985 0.182-287.818 129.015-288 287.983v0.017z"/></symbol><symbol id="i-palette" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M803.080 744.44c-74.607 73.9-177.299 119.56-290.657 119.56-0.149 0-0.298 0-0.446 0h-4.257c-227.902-2.42-411.72-187.732-411.72-415.978 0-0.008 0-0.015 0-0.023v0.001c0-172 106.32-316.24 277.44-376.68 12.675-4.614 27.306-7.283 42.56-7.283 70.679 0 127.979 57.286 128 127.961v0.002c0 35.346 28.654 64 64 64v0h184.84c0.183-0.001 0.399-0.001 0.616-0.001 60.448 0 111.051 42.152 124.019 98.666l0.165 0.855c6.594 27.799 10.375 59.717 10.375 92.518 0 1.224-0.005 2.447-0.016 3.669l0.001-0.187c-0.884 114.897-48.535 218.494-124.831 292.834l-0.089 0.086zM855.080 369.6c-6.603-28.601-31.853-49.6-62.008-49.6-0.082 0-0.163 0-0.244 0h-184.827c-70.692 0-128-57.308-128-128v0c-0.053-35.306-28.686-63.907-64-63.907-7.612 0-14.914 1.329-21.686 3.768l0.446-0.14c-144.8 51.080-234.76 172.28-234.76 316.28 0 0.005 0 0.012 0 0.019 0 193.124 155.528 349.923 348.165 351.98l0.195 0.002h3.6c193.041-0.774 349.524-156.204 351.998-348.766l0.002-0.234c0.009-0.919 0.013-2.005 0.013-3.092 0-27.76-3.182-54.778-9.202-80.707l0.469 2.398zM560 656c0-26.51-21.49-48-48-48s-48 21.49-48 48c0 26.51 21.49 48 48 48v0c26.51 0 48-21.49 48-48v0zM384 560c0-26.51-21.49-48-48-48s-48 21.49-48 48c0 26.51 21.49 48 48 48v0c26.51 0 48-21.49 48-48v0zM384 336c0-26.51-21.49-48-48-48s-48 21.49-48 48c0 26.51 21.49 48 48 48v0c26.51 0 48-21.49 48-48v0zM736 560c0-26.51-21.49-48-48-48s-48 21.49-48 48c0 26.51 21.49 48 48 48v0c26.51 0 48-21.49 48-48v0z"/></symbol><symbol id="i-play-pause" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M736 704v-512c0-17.673-14.327-32-32-32s-32 14.327-32 32v0 512c0 17.673 14.327 32 32 32s32-14.327 32-32v0zM896 736c-17.673 0-32-14.327-32-32v0-512c0-17.673 14.327-32 32-32s32 14.327 32 32v0 512c0 17.673-14.327 32-32 32v0zM576 448c0-0.029 0-0.063 0-0.096 0-22.307-11.586-41.907-29.068-53.113l-0.252-0.151-352.76-224.6c-9.697-6.285-21.552-10.022-34.281-10.022-35.057 0-63.493 28.346-63.639 63.368v449.214c0.147 35.036 28.583 63.382 63.639 63.382 12.728 0 24.584-3.737 34.53-10.173l-0.249 0.151 352.76-224.6c17.734-11.356 29.32-30.957 29.32-53.264 0-0.034 0-0.068 0-0.102v0.005zM511.28 448l-351.28 223.68v-447.4z"/></symbol><symbol id="i-shield-check" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M832 800h-640c-35.346 0-64-28.654-64-64v0-224c0-210.88 102.080-338.68 187.72-408.76 92.24-75.44 184-101.040 188-102.12 2.519-0.713 5.412-1.122 8.4-1.122s5.881 0.41 8.625 1.176l-0.225-0.054c4 1.080 95.64 26.68 188 102.12 85.4 70.080 187.48 197.88 187.48 408.76v224c0 35.346-28.654 64-64 64v0zM832 512c0-148.28-54.64-268.64-162.4-357.68-44.81-37.124-97.092-67.242-153.992-87.669l-3.608-1.131c-59.748 21.193-111.39 50.784-156.567 87.948l0.887-0.708c-109.040 89.2-164.32 210.040-164.32 359.24v224h640zM329.36 393.36c-5.794 5.794-9.378 13.799-9.378 22.64 0 17.683 14.335 32.018 32.018 32.018 8.841 0 16.846-3.584 22.64-9.378l73.36-73.4 201.36 201.4c5.794 5.794 13.799 9.378 22.64 9.378 17.683 0 32.018-14.335 32.018-32.018 0-8.841-3.584-16.846-9.378-22.64l-224-224c-5.792-5.798-13.797-9.385-22.64-9.385s-16.848 3.587-22.64 9.385v0z"/></symbol><symbol id="i-shopping-bag" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M864 800h-704c-35.346 0-64-28.654-64-64v0-576c0-35.346 28.654-64 64-64v0h704c35.346 0 64 28.654 64 64v0 576c0 35.346-28.654 64-64 64v0zM864 160h-704v576h704v-576zM704 608c0-106.039-85.961-192-192-192s-192 85.961-192 192v0c0 17.673 14.327 32 32 32s32-14.327 32-32v0c0-70.692 57.308-128 128-128s128 57.308 128 128v0c0 17.673 14.327 32 32 32s32-14.327 32-32v0z"/></symbol><symbol id="i-sparkle" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M790.32 443.76l-206.32 76.24-76 206.48c-9.219 24.538-32.487 41.683-59.76 41.683s-50.541-17.145-59.615-41.244l-0.145-0.439-76.48-206.48-206.48-76c-24.538-9.219-41.683-32.487-41.683-59.76s17.145-50.541 41.244-59.615l0.439-0.145 206.48-76.48 76-206.48c9.219-24.538 32.487-41.683 59.76-41.683s50.541 17.145 59.615 41.244l0.145 0.439 76.48 206.48 206.48 76c24.538 9.219 41.683 32.487 41.683 59.76s-17.145 50.541-41.244 59.615l-0.439 0.145zM548 303.12c-8.815-3.313-15.647-10.145-18.887-18.74l-0.073-0.22-81.040-219.56-80.88 219.4c-3.309 8.909-10.211 15.811-18.899 19.048l-0.221 0.072-219.4 80.88 219.4 80.88c8.909 3.309 15.811 10.211 19.048 18.899l0.072 0.221 80.88 219.4 80.88-219.4c3.313-8.815 10.145-15.647 18.74-18.887l0.22-0.073 219.56-81.040zM576 800c0 17.673 14.327 32 32 32v0h64v64c0 17.673 14.327 32 32 32s32-14.327 32-32v0-64h64c17.673 0 32-14.327 32-32s-14.327-32-32-32v0h-64v-64c0-17.673-14.327-32-32-32s-32 14.327-32 32v0 64h-64c-17.673 0-32 14.327-32 32v0zM992 608c0-17.673-14.327-32-32-32v0h-32v-32c0-17.673-14.327-32-32-32s-32 14.327-32 32v0 32h-32c-17.673 0-32 14.327-32 32s14.327 32 32 32v0h32v32c0 17.673 14.327 32 32 32s32-14.327 32-32v0-32h32c17.673 0 32-14.327 32-32v0z"/></symbol><symbol id="i-stack-plus" viewBox="0 0 1024 1024"><path transform="matrix(1 0 0 -1 0 960)" d="M923.64 464c2.687-4.584 4.274-10.095 4.274-15.977 0-11.747-6.33-22.016-15.765-27.581l-0.149-0.081-384-224c-4.618-2.738-10.18-4.357-16.12-4.357s-11.502 1.618-16.269 4.438l0.149-0.081-384 224c-9.361 5.696-15.518 15.843-15.518 27.429 0 17.673 14.327 32 32 32 5.793 0 11.226-1.539 15.913-4.231l-0.156 0.082 368-214.6 368 214.6c4.584 2.687 10.095 4.274 15.977 4.274 11.747 0 22.016-6.33 27.581-15.765l0.081-0.149zM96 640c0.028 11.754 6.388 22.016 15.849 27.558l0.151 0.082 384 224c4.618 2.738 10.18 4.357 16.12 4.357s11.502-1.618 16.269-4.438l-0.149 0.081 384-224c9.562-5.652 15.875-15.909 15.875-27.64s-6.313-21.988-15.726-27.559l-0.148-0.081-384-224c-4.618-2.738-10.18-4.357-16.12-4.357s-11.502 1.618-16.269 4.438l0.149-0.081-384 224c-9.612 5.624-15.972 15.886-16 27.636v0.004zM191.52 640l320.48-186.96 320.48 186.96-320.48 186.96zM928 192h-64v64c0 17.673-14.327 32-32 32s-32-14.327-32-32v0-64h-64c-17.673 0-32-14.327-32-32s14.327-32 32-32v0h64v-64c0-17.673 14.327-32 32-32s32 14.327 32 32v0 64h64c17.673 0 32 14.327 32 32s-14.327 32-32 32v0zM560 96.96l-48-28-368 214.68c-4.157 2.115-9.065 3.354-14.263 3.354-17.673 0-32-14.327-32-32 0-11.063 5.614-20.815 14.148-26.562l0.114-0.072 384-224c4.618-2.738 10.18-4.357 16.12-4.357s11.502 1.618 16.269 4.438l-0.149-0.081 64 37.32c9.768 5.603 16.242 15.971 16.242 27.851 0 17.673-14.327 32-32 32-6.088 0-11.779-1.7-16.624-4.651l0.141 0.080z"/></symbol></svg>
 
-    <!-- Nav -->
-    <nav id="em-nav">
-      <div id="em-nav-logo">
-        <svg xmlns="http://www.w3.org/2000/svg" width="458" height="55" viewBox="0 0 458 55" fill="none" aria-label="SWTCHR">
-          <path d="M1.57529 42.5281C-0.0867887 40.0719 1.0028 38.4007 3.81586 38.3072C7.70976 38.1778 11.594 38.2223 15.4899 38.2237L37.6765 38.2444C41.5375 38.2544 48.613 38.7493 51.7842 37.3822C56.4691 35.3626 56.5929 24.9535 50.2687 24.1158C45.868 23.5329 42.0257 23.7223 37.7131 23.732L18.3299 23.7546C14.9845 23.7625 11.1279 24.0244 7.98077 23.1684C-4.07881 19.8883 -1.94591 0.749732 10.8429 0.290103C14.7142 0.150963 18.3905 0.125695 22.2178 0.126647L42.4465 0.139733C44.9888 0.142065 54.6305 -0.205549 56.5252 0.187151C57.076 0.301356 57.7199 0.56767 58.0351 1.06373C58.3958 1.63161 58.3858 2.43188 58.2363 3.06315C58.1576 3.39561 57.897 3.91072 57.5953 4.09202C55.9522 5.07942 25.4075 4.54028 21.4956 4.53243C17.9378 4.52505 12.0104 3.91025 8.78924 5.16175C6.7107 5.96951 5.29455 7.74731 4.73325 9.86867C4.24947 11.6971 4.47959 14.0698 5.43742 15.72C6.37994 17.3441 8.03353 18.3477 9.81745 18.8086C12.567 19.5188 15.8941 19.1778 18.7417 19.1733L37.1634 19.13C41.1973 19.1188 45.7065 18.8616 49.6903 19.3361C57.7805 20.2997 61.4833 26.9597 59.519 34.5818C58.4163 38.9668 55.087 41.1531 51.0276 42.4634C49.0959 43.5899 43.2957 43.3213 40.8649 43.3266L26.3352 43.3101C21.758 43.2944 17.1806 43.3037 12.6035 43.338C10.1849 43.3539 3.32133 43.7946 1.57529 42.5281Z" fill="white"/>
-          <path d="M72.6264 0.177215C73.419 0.12468 74.143 0.165105 74.9323 0.197963C75.647 0.51455 76.2245 1.32048 76.4687 2.05071C79.2408 10.2138 81.0306 18.2308 83.5563 26.5278C84.2831 28.9149 86.0455 42.646 91.545 37.1839C92.4984 36.2369 94.2805 31.12 94.922 29.4795C97.1756 23.7238 99.4856 17.9905 101.852 12.2802C103.016 9.50215 104.079 6.4424 105.631 3.86041C106.188 2.93337 106.814 2.16094 107.737 1.57904C109.479 0.481287 111.857 -0.0977811 113.887 0.369747C115.697 0.786739 117.196 1.7098 118.359 3.16261C121.186 6.69294 127.343 24.248 129.389 29.6337C130.277 31.9713 131.045 34.7346 132.367 36.8432C132.798 37.5303 133.54 38.009 134.33 38.1801C135.582 38.4508 136.912 38.0059 137.692 36.9747C139.404 34.7118 140.309 29.2597 141.078 26.4129C142.106 22.6077 147.663 1.54554 149.383 0.472341C149.996 0.0897532 150.802 0.0203963 151.492 0.195916C151.907 0.301556 152.324 0.58576 152.54 0.953882C153.183 2.0458 152.573 3.57894 152.283 4.71195C150.894 10.3849 148.303 17.6721 146.717 23.513C145.743 27.0995 144.075 33.7199 142.956 36.8931C142.61 37.8874 142.11 38.8215 141.475 39.6612C138.524 43.5256 132.377 44.1023 129.191 40.2722C126.84 37.4463 125.533 32.8369 124.212 29.3853L119.105 16.3849C117.943 13.3492 116.819 10.4068 115.566 7.3263C114.598 4.94536 111.921 3.24263 110.038 5.79857C108.845 7.41862 107.72 10.7249 106.92 12.7073L100.539 28.6749C98.4567 33.9373 96.7253 42.1021 90.215 42.8297C81.8749 43.7619 80.8131 34.9402 79.2047 28.9875L74.7295 12.3649C73.9404 9.43791 70.8653 2.45259 72.6264 0.177215Z" fill="white"/>
-          <path d="M397.65 26.7149C401 18.3791 410.75 20.0294 418.211 20.0417L437.851 20.0834C440.193 20.0879 445.214 20.2835 447.302 19.6109C449.444 18.9344 451.173 17.3386 452.017 15.2577C452.792 13.2977 452.775 11.1133 451.967 9.1663C451.218 7.39873 449.863 5.82531 448.051 5.10725C445.129 3.94783 413.781 4.55621 408.915 4.58333C405.802 4.6007 401.416 5.1515 398.442 4.26213C397.754 4.05703 397.46 3.69079 397.179 3.0551C396.796 -0.858577 402.781 0.121115 405.13 0.138222L416.145 0.135914L435.429 0.118116C441.156 0.119639 448.788 -0.652104 453.424 3.16255C458.051 6.97046 458.148 14.4219 455.181 19.2523C452.162 24.1712 446.9 24.2585 441.807 24.3535C444.057 27.0996 446.37 29.7942 448.74 32.4352C450.474 34.3757 455.535 39.5161 456.417 41.5692C456.03 43.052 453.293 42.6937 452.045 42.6644C450.233 41.2371 445.138 35.3417 443.389 33.3041C440.959 30.4746 437.628 27.0475 435.383 24.2319L415.902 24.2328C412.322 24.2376 406.014 23.4125 403.572 26.0547C400.969 28.8715 402.2 33.5089 402.005 37.0286C401.894 38.6401 402.471 40.9316 401.406 42.2663C400.836 42.9892 398.618 42.9882 397.992 42.4188C397.873 42.2542 397.217 41.8079 397.179 41.5616C396.635 38.0669 396.53 29.8146 397.65 26.7149Z" fill="white"/>
-          <path d="M250.133 42.6132C238.778 38.4497 239.51 32.9769 239.772 22.1069C239.852 18.763 239.481 15.0778 239.75 11.7232C239.833 10.5503 240.078 9.3944 240.475 8.2878C242.686 2.2553 248.609 0.0860687 254.564 0.12102C268.066 0.20025 281.571 0.138531 295.07 0.162348C296.188 0.162515 297.914 0.324306 298.974 0.644748C300.004 0.955743 300.049 2.66414 299.706 3.53985C299.248 4.15356 298.679 4.38435 297.928 4.43075C294.088 4.66796 289.847 4.57422 286.005 4.56875L261.381 4.51188C255.608 4.49261 246.238 3.01113 244.503 11.4779C244.267 13.6255 244.084 16.9579 244.275 19.0735C244.75 24.3879 242.672 32.6616 247.441 36.3407C250.817 38.9424 257.71 38.2512 261.928 38.2519L286.475 38.2738C290.163 38.276 294.233 38.0276 297.89 38.4209C300.26 38.6757 300.738 40.6543 299.212 42.4568C299.017 42.6329 298.812 42.7899 298.584 42.916C297.231 43.6567 258.563 43.5037 253.789 43.2453C252.517 43.1766 251.357 42.9636 250.133 42.6132Z" fill="white"/>
-          <path d="M192.718 4.49553C189.465 4.4765 167.697 5.19266 166.182 3.99517C165.818 3.70704 165.6 3.19975 165.56 2.74495C165.502 2.08906 165.763 1.34073 166.186 0.840032C166.577 0.377405 167.178 0.155013 167.768 0.113471C170.766 -0.0974286 173.943 0.107809 176.958 0.115756L195.601 0.148541L213.553 0.126629C216.512 0.117588 219.553 0.0744994 222.514 0.119515C223.148 0.129128 224.15 0.524159 224.576 0.977863C225.24 1.68491 225.219 1.8823 225.252 2.70603C224.223 5.34089 218.282 4.51837 215.83 4.53288C209.797 4.59784 203.762 4.56524 197.73 4.4351L197.736 25.1443C197.738 28.6019 197.861 33.0243 197.681 36.4005C197.694 37.5558 197.954 41.0636 197.322 41.9111C196.529 42.9737 194.413 43.1314 193.291 42.1771C192.414 41.0094 192.721 30.5227 192.721 28.1791L192.718 4.49553Z" fill="white"/>
-          <path d="M373.649 19.1472L373.704 8.65009C373.707 6.39738 372.879 0.0398601 376.12 0.137339C376.754 0.151876 377.358 0.425017 377.789 0.89383C378.148 1.28934 378.347 1.80179 378.359 2.32761C378.507 8.56943 378.438 15.0225 378.435 21.2546L378.428 34.2211C378.431 36.0056 378.897 41.111 377.684 42.1786C377.149 42.6557 376.443 42.8934 375.73 42.8367C375.164 42.7944 374.648 42.5643 374.279 42.1213C373.164 40.7746 373.733 26.5216 373.764 23.7618C359.168 23.4585 344.468 23.8318 329.863 23.7323C325.895 23.7054 326.235 20.0345 328.386 19.369C329.582 19.053 334.908 19.1489 336.467 19.1513C341.815 19.1517 348.947 18.9312 354.147 19.1946C359.004 19.0749 364.023 19.1451 368.894 19.1577L373.649 19.1472Z" fill="white"/>
-          <path d="M318.193 0.918408C319.377 0.0389316 321.039 -0.381891 322.085 0.928853C322.49 1.4359 322.585 3.70135 322.597 4.45958C322.765 15.031 322.644 25.614 322.656 36.1877C322.658 37.7454 322.68 39.6258 322.468 41.1583C322.228 42.8844 319.703 42.5602 318.569 42.4219C318.324 41.9189 317.597 41.494 317.578 41.1597C317.352 37.1908 317.418 32.3973 317.416 28.4663L317.421 12.4528C317.423 9.97451 317.083 2.79942 318.193 0.918408Z" fill="white"/>
-          <path d="M454.536 54.3733C453.553 54.3733 452.873 53.9854 452.496 53.2096L453.454 52.6851C453.668 53.1003 454.023 53.3079 454.52 53.3079C454.864 53.3079 455.132 53.1932 455.323 52.9637C455.52 52.7343 455.618 52.4283 455.618 52.0459V51.9312C455.388 52.2699 455.028 52.4393 454.536 52.4393C453.902 52.4393 453.427 52.2562 453.11 51.8902C452.799 51.5187 452.643 51.0188 452.643 50.3905V48.3335H453.79V50.3495C453.79 50.65 453.867 50.8904 454.02 51.0707C454.178 51.251 454.4 51.3411 454.684 51.3411C454.946 51.3411 455.164 51.2455 455.339 51.0543C455.514 50.8576 455.602 50.6145 455.602 50.3249V48.3335H456.782V52.0295C456.782 52.7343 456.574 53.2997 456.159 53.7259C455.749 54.1575 455.208 54.3733 454.536 54.3733Z" fill="white"/>
-          <path d="M450.015 52.4967C449.408 52.5022 448.892 52.2946 448.466 51.8739C448.045 51.4532 447.835 50.9478 447.835 50.3578C447.835 49.7623 448.045 49.2569 448.466 48.8417C448.892 48.421 449.408 48.2134 450.015 48.2189C450.425 48.2243 450.793 48.3227 451.121 48.5139C451.454 48.7051 451.709 48.9892 451.883 49.3662L450.925 49.8907C450.728 49.5082 450.425 49.317 450.015 49.317C449.725 49.317 449.482 49.4181 449.285 49.6202C449.094 49.8224 448.999 50.0682 448.999 50.3578C448.999 50.6473 449.094 50.8932 449.285 51.0953C449.482 51.2975 449.725 51.3986 450.015 51.3986C450.425 51.3986 450.728 51.2073 450.925 50.8249L451.883 51.3494C451.709 51.7264 451.454 52.0105 451.121 52.2017C450.793 52.3929 450.425 52.4912 450.015 52.4967Z" fill="white"/>
-          <path d="M444.936 49.3497C444.625 49.3497 444.387 49.4589 444.223 49.6775C444.065 49.896 443.985 50.1719 443.985 50.5052V52.3901H442.822V50.3659C442.822 49.743 443.005 49.2295 443.371 48.8252C443.737 48.4209 444.259 48.2188 444.936 48.2188C445.619 48.2188 446.144 48.4209 446.51 48.8252C446.881 49.2295 447.067 49.743 447.067 50.3659V52.3901H445.903V50.5052C445.903 50.1719 445.821 49.896 445.657 49.6775C445.493 49.4589 445.253 49.3497 444.936 49.3497Z" fill="white"/>
-          <path d="M440.044 52.4967C439.405 52.4967 438.875 52.2945 438.454 51.8902C438.039 51.4859 437.831 50.9642 437.831 50.325C437.831 49.7294 438.028 49.2241 438.421 48.8089C438.814 48.3936 439.32 48.186 439.937 48.186C440.56 48.186 441.054 48.3854 441.421 48.7843C441.787 49.1776 441.97 49.6639 441.97 50.243V50.5872H438.954C438.997 50.8604 439.115 51.0789 439.306 51.2428C439.503 51.4067 439.746 51.4887 440.036 51.4887C440.505 51.4887 440.839 51.292 441.035 50.8986L441.929 51.3494C441.754 51.7154 441.502 51.9995 441.175 52.2016C440.847 52.3983 440.47 52.4967 440.044 52.4967ZM439.003 49.9398H440.814C440.787 49.7267 440.691 49.5519 440.527 49.4153C440.369 49.2733 440.169 49.2022 439.929 49.2022C439.683 49.2022 439.478 49.2733 439.314 49.4153C439.15 49.5519 439.047 49.7267 439.003 49.9398Z" fill="white"/>
-          <path d="M434.759 54.3651C434.284 54.3651 433.869 54.264 433.513 54.0619C433.164 53.8597 432.896 53.5702 432.71 53.1932L433.677 52.6687C433.89 53.0894 434.246 53.2997 434.743 53.2997C435.092 53.2997 435.371 53.185 435.579 52.9555C435.792 52.7261 435.898 52.4147 435.898 52.0213V51.9475C435.636 52.2753 435.24 52.4392 434.71 52.4392C434.136 52.4392 433.65 52.2398 433.251 51.841C432.858 51.4422 432.661 50.945 432.661 50.3495C432.661 49.7594 432.871 49.2568 433.292 48.8416C433.718 48.4264 434.24 48.2188 434.857 48.2188C435.491 48.2188 436.016 48.4209 436.431 48.8252C436.852 49.2295 437.062 49.7376 437.062 50.3495V51.9885C437.062 52.6988 436.843 53.2724 436.406 53.7095C435.975 54.1466 435.426 54.3651 434.759 54.3651ZM434.841 51.3411C435.136 51.3411 435.382 51.2455 435.579 51.0543C435.781 50.8576 435.882 50.6145 435.882 50.3249C435.882 50.0353 435.781 49.7949 435.579 49.6037C435.382 49.4125 435.136 49.3169 434.841 49.3169C434.551 49.3169 434.306 49.4125 434.103 49.6037C433.907 49.7949 433.808 50.0353 433.808 50.3249C433.808 50.6145 433.907 50.8576 434.103 51.0543C434.306 51.2455 434.551 51.3411 434.841 51.3411Z" fill="white"/>
-          <path d="M429.499 52.4965C428.92 52.4965 428.439 52.2889 428.057 51.8737C427.68 51.4584 427.491 50.9504 427.491 50.3494C427.491 49.7593 427.702 49.2567 428.122 48.8415C428.548 48.4208 429.07 48.2104 429.688 48.2104C430.321 48.2104 430.846 48.4153 431.261 48.8251C431.682 49.2294 431.892 49.7375 431.892 50.3494V52.39H430.786V51.9146C430.48 52.3025 430.051 52.4965 429.499 52.4965ZM428.95 51.1033C429.147 51.3055 429.392 51.4065 429.688 51.4065C429.983 51.4065 430.228 51.3055 430.425 51.1033C430.627 50.8957 430.728 50.6471 430.728 50.3576C430.728 50.068 430.627 49.8222 430.425 49.62C430.228 49.4124 429.983 49.3086 429.688 49.3086C429.392 49.3086 429.147 49.4124 428.95 49.62C428.753 49.8222 428.655 50.068 428.655 50.3576C428.655 50.6471 428.753 50.8957 428.95 51.1033Z" fill="white"/>
-          <path d="M426.06 52.4804C425.857 52.4804 425.685 52.4094 425.543 52.2674C425.407 52.1253 425.338 51.9559 425.338 51.7593C425.338 51.5626 425.407 51.3932 425.543 51.2512C425.685 51.1091 425.857 51.0381 426.06 51.0381C426.256 51.0381 426.423 51.1091 426.559 51.2512C426.702 51.3932 426.773 51.5626 426.773 51.7593C426.773 51.9559 426.702 52.1253 426.559 52.2674C426.423 52.4094 426.256 52.4804 426.06 52.4804Z" fill="white"/>
-          <path d="M420.693 54.2175H420.185V50.3904C420.185 49.8112 420.387 49.3223 420.791 48.9234C421.196 48.5246 421.69 48.3252 422.275 48.3252C422.865 48.3252 423.359 48.5273 423.758 48.9316C424.157 49.3305 424.356 49.8167 424.356 50.3904C424.356 50.9804 424.16 51.4776 423.766 51.8819C423.373 52.2807 422.881 52.4801 422.291 52.4801C421.963 52.4801 421.657 52.4036 421.373 52.2507C421.089 52.0922 420.863 51.8819 420.693 51.6196V54.2175ZM421.152 51.5295C421.463 51.8409 421.838 51.9966 422.275 51.9966C422.712 51.9966 423.083 51.8409 423.389 51.5295C423.695 51.2126 423.848 50.8356 423.848 50.3986C423.848 49.9615 423.695 49.5872 423.389 49.2758C423.083 48.9644 422.712 48.8087 422.275 48.8087C421.832 48.8087 421.458 48.9644 421.152 49.2758C420.846 49.5872 420.693 49.9615 420.693 50.3986C420.693 50.8356 420.846 51.2126 421.152 51.5295Z" fill="white"/>
-          <path d="M416.995 51.9886C417.416 51.9886 417.749 51.8356 417.995 51.5297C418.241 51.2183 418.364 50.8386 418.364 50.3906V48.4155H418.872V50.4479C418.872 51.038 418.702 51.5242 418.364 51.9066C418.025 52.2836 417.569 52.4721 416.995 52.4721C416.432 52.4721 415.982 52.2809 415.643 51.8985C415.31 51.516 415.143 51.0298 415.143 50.4397V48.4155H415.651V50.3987C415.651 50.8413 415.771 51.2183 416.012 51.5297C416.252 51.8356 416.58 51.9886 416.995 51.9886Z" fill="white"/>
-          <path d="M411.744 52.4802C411.154 52.4802 410.66 52.278 410.261 51.8737C409.862 51.4695 409.663 50.9805 409.663 50.4068C409.663 49.8168 409.859 49.3223 410.253 48.9235C410.646 48.5247 411.135 48.3253 411.72 48.3253C412.047 48.3253 412.353 48.4017 412.637 48.5547C412.922 48.7077 413.148 48.9153 413.318 49.1775L413.326 46.5879H413.834V50.4068C413.834 50.9859 413.632 51.4776 413.227 51.8819C412.823 52.2808 412.329 52.4802 411.744 52.4802ZM411.744 51.9967C412.187 51.9967 412.561 51.841 412.867 51.5295C413.173 51.2181 413.326 50.8439 413.326 50.4068C413.326 49.9697 413.17 49.5955 412.859 49.2841C412.553 48.9672 412.181 48.8088 411.744 48.8088C411.307 48.8088 410.936 48.9672 410.63 49.2841C410.324 49.5955 410.171 49.9697 410.171 50.4068C410.171 50.8439 410.324 51.2181 410.63 51.5295C410.936 51.841 411.307 51.9967 411.744 51.9967Z" fill="white"/>
-          <path d="M404.292 54.3078C403.904 54.3078 403.549 54.2231 403.226 54.0538C402.904 53.8899 402.655 53.6467 402.48 53.3244L402.907 53.0867C403.043 53.3271 403.232 53.5102 403.472 53.6358C403.718 53.7615 403.988 53.8243 404.283 53.8243C404.759 53.8243 405.122 53.6631 405.373 53.3408C405.625 53.0239 405.748 52.6114 405.742 52.1033V51.5461C405.469 52.1525 404.994 52.4557 404.316 52.4557C403.748 52.4557 403.311 52.2809 403.005 51.9312C402.699 51.5816 402.546 51.1117 402.546 50.5217V48.4155H403.054V50.4725C403.054 50.9314 403.166 51.2975 403.39 51.5706C403.62 51.8384 403.945 51.9722 404.365 51.9722C404.786 51.9722 405.119 51.822 405.365 51.5215C405.616 51.2155 405.742 50.8358 405.742 50.3824V48.4155H406.25V52.1033C406.25 52.7644 406.078 53.2971 405.734 53.7014C405.395 54.1057 404.914 54.3078 404.292 54.3078Z" fill="white"/>
-          <path d="M399.458 52.4802C398.874 52.4802 398.379 52.2808 397.975 51.8819C397.571 51.4776 397.369 50.9859 397.369 50.4068V46.5879H397.877V49.1775C398.046 48.9153 398.273 48.7077 398.557 48.5547C398.841 48.4017 399.147 48.3253 399.475 48.3253C400.065 48.3253 400.557 48.5247 400.95 48.9235C401.343 49.3223 401.54 49.8168 401.54 50.4068C401.54 50.9805 401.341 51.4695 400.942 51.8737C400.543 52.278 400.048 52.4802 399.458 52.4802ZM399.458 51.9967C399.895 51.9967 400.267 51.841 400.573 51.5295C400.879 51.2181 401.032 50.8439 401.032 50.4068C401.032 49.9697 400.879 49.5955 400.573 49.2841C400.267 48.9672 399.895 48.8088 399.458 48.8088C399.021 48.8088 398.647 48.9672 398.336 49.2841C398.03 49.5955 397.877 49.9697 397.877 50.4068C397.877 50.8439 398.03 51.2181 398.336 51.5295C398.642 51.841 399.016 51.9967 399.458 51.9967Z" fill="white"/>
-        </svg>
-        <span id="em-nav-by">by dup.agency</span>
-      </div>
-      <div id="em-badge">
-        <span id="em-badge-dot"></span>
-        EM BREVE
-      </div>
-    </nav>
-
-    <!-- Headline -->
-    <div id="em-headline">
-      <span id="em-eyebrow">SWITCH YOUR STATE</span>
-      <h1>EM<br>BREVE</h1>
-      <div id="em-divider"></div>
-      <p>O site está quase pronto. Quando chegar, o jeito de operar uma loja virtual muda de vez.</p>
-    </div>
-
-    <!-- Card -->
-    <div id="em-card">
-      <p>Blocos configuráveis direto no painel.<br><strong>Sem ticket. Sem dev. Sem espera.</strong></p>
-    </div>
-
-    <!-- Decorative icon -->
-    <i id="em-icon-arrows" class="ph ph-arrows-out"></i>
-
-    <!-- Bottom icons -->
-    <div id="em-icons-dec">
-      <i class="ph ph-fingerprint"></i>
-      <i class="ph ph-line-segments"></i>
-      <i class="ph ph-checks"></i>
-    </div>
-
-    <!-- Coords -->
-    <div id="em-coords">
-      <div id="em-palette">
-        <span class="em-dot" style="background:#0D1015"></span>
-        <span class="em-dot" style="background:#639BFC"></span>
-        <span class="em-dot" style="background:#C5E2FA"></span>
-        <span class="em-dot" style="background:#8F94A7"></span>
-      </div>
-      <span id="em-coords-label">LAT -23.5505° · LON -46.6333°</span>
-    </div>
-
-    <!-- Bottom right -->
-    <span id="em-bottom-right">cores — espaçamentos — alinhamentos</span>
-
-    <!-- Loader -->
-    <div id="em-loader"><span id="em-loader-spinner"></span></div>
-
-    <!-- Astronaut -->
-    <div id="em-astronaut">
-      <video id="em-video" src="./video-swtchr.mp4" playsinline muted preload="auto"></video>
-      <img   id="em-frame" alt="">
-    </div>
-
+<nav class="nav">
+  <a class="brand" href="#topo" aria-label="SWTCHR — início">
+    <img src="assets/logo-swtchr-white.svg" alt="SWTCHR" width="133" height="16">
+    <span>by dup.agency</span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="#como-funciona">Como funciona</a>
+    <a class="nav-link" href="#recursos">Recursos</a>
+    <a class="nav-cta" href="#contato">Agende uma demo →</a>
   </div>
+</nav>
 
-  <script>
-    (function () {
-      var video    = document.getElementById('em-video');
-      var frameImg = document.getElementById('em-frame');
-      video.style.opacity = '0';
-      var FRAME_COUNT = 60;
-      var frames   = [];
-      var canvas, ctx;
+<main id="topo">
 
-      function isTouchDevice() {
-        return ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+  <!-- HERO -->
+  <section class="hero">
+    <img class="hero-glitch g1" src="assets/glitch-1.webp" alt="" width="537" height="639">
+    <img class="hero-glitch g2" src="assets/glitch-2.webp" alt="" width="433" height="433">
+
+    <div class="hero-copy" data-reveal>
+      <div class="badge"><i></i><span><span class="badge-lead">Orquestração de blocos · </span>VTEX IO + Nuvemshop</span></div>
+      <h1>Sua loja não deveria depender de um ticket pra mudar de cara.</h1>
+      <p class="hero-lead">O SWTCHR coloca o controle das seções da sua loja direto nas suas mãos — sem abrir chamado, sem esperar agência, sem código.</p>
+    </div>
+
+    <div class="stage">
+      <img class="stage-astro" src="assets/astronauta.webp" alt="Astronauta SWTCHR" width="1600" height="891" fetchpriority="high">
+      <div class="chip c1">Preparado para SEO e GEO</div>
+      <div class="chip c2">Blocos configuráveis sem código</div>
+      <div class="chip c3">Sem SLA de agência</div>
+      <div class="chip c4">cores · espaçamentos · alinhamentos</div>
+      <div class="deco-icons" aria-hidden="true">
+        <svg class="i"><use href="#i-flow-arrow"/></svg>
+        <svg class="i"><use href="#i-align-left"/></svg>
+        <svg class="i"><use href="#i-play-pause"/></svg>
+        <svg class="i"><use href="#i-cell-signal-full"/></svg>
+      </div>
+      <div class="deco-coords" aria-hidden="true">
+        <b><i style="background:#0D1015"></i><i style="background:#639BFC"></i><i style="background:#C5E2FA"></i><i style="background:#8F94A7"></i></b>
+        -7.098744, -34.843518
+      </div>
+      <svg class="i deco-finger" aria-hidden="true"><use href="#i-fingerprint"/></svg>
+    </div>
+
+    <div class="hero-cta" data-reveal data-reveal-delay="120">
+      <a class="btn btn-blue" href="#contato">Quero conhecer <svg class="i"><use href="#i-arrow-right"/></svg></a>
+      <p>Atendemos lojas selecionadas. Agenda limitada.</p>
+    </div>
+  </section>
+
+  <!-- 01 O PROBLEMA -->
+  <section class="problem">
+    <div class="wrap-wide">
+      <div class="spec-head" data-reveal>
+        <span class="num">01</span>
+        <span class="ttl">O Problema</span>
+        <span class="aside">Enquanto o ticket tá aberto, o concorrente já atualizou a home.</span>
+      </div>
+      <div class="stats">
+        <div class="stat" data-reveal>
+          <div class="stat-num" data-counter="72" data-counter-suffix="h">72h</div>
+          <p>Tempo médio pra uma agência trocar um banner na sua home.</p>
+        </div>
+        <div class="stat" data-reveal data-reveal-delay="150">
+          <div class="stat-num" data-counter="0" data-counter-prefix="R$ ">R$ 0</div>
+          <p>O que entra enquanto você espera a alteração ficar pronta.</p>
+        </div>
+        <div class="stat" data-reveal data-reveal-delay="300">
+          <div class="stat-num" data-counter="2" data-counter-prefix="&lt; " data-counter-suffix=" min">&lt; 2 min</div>
+          <p>O que leva pra fazer a mesma coisa com o SWTCHR.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- O QUE É -->
+  <section class="what">
+    <div class="wrap">
+      <div data-reveal>
+        <div class="eyebrow">O que é o SWTCHR</div>
+        <h2 class="h2">Um sistema que coloca o painel da sua loja pra trabalhar de verdade.</h2>
+        <p class="what-lead">O SWTCHR é um conjunto de blocos modulares instalado na sua loja VTEX IO ou Nuvemshop. Na VTEX, cada seção da home, categoria e PDP vira um bloco no Site Editor. Na Nuvemshop, suas páginas de produto ganham blocos montados no painel do SWTCHR. Nos dois casos: sem tocar em código, sem abrir ticket, sem explicar pra ninguém o que você quer.</p>
+        <p class="what-punch">Você seleciona. Você configura. Você publica.</p>
+        <ul class="what-list">
+          <li><svg class="i"><use href="#i-arrow-right"/></svg>Escolhe qual bloco entra em cada página</li>
+          <li><svg class="i"><use href="#i-arrow-right"/></svg>Ajusta textos, imagens e configurações pelo painel</li>
+          <li><svg class="i"><use href="#i-arrow-right"/></svg>Reordena seções arrastando</li>
+        </ul>
+      </div>
+      <div class="editor" data-reveal data-reveal-delay="150" aria-hidden="true">
+        <div class="editor-bar"><i></i><i></i><i></i><span>painel // swtchr</span></div>
+        <div class="editor-body">
+          <div class="row on">
+            <div class="row-l"><svg class="i"><use href="#i-house"/></svg><div><div class="row-name">Hero principal</div><div class="row-meta">Bloco · Visível</div></div></div>
+            <div class="row-r"><span class="tag">Ativo</span><span class="grip">⠿</span></div>
+          </div>
+          <div class="row">
+            <div class="row-l"><svg class="i"><use href="#i-image"/></svg><div><div class="row-name">Banner promocional</div><div class="row-meta">Bloco · Visível</div></div></div>
+            <div class="row-r"><span class="tag">Ativo</span><span class="grip">⠿</span></div>
+          </div>
+          <div class="row">
+            <div class="row-l"><svg class="i"><use href="#i-shopping-bag"/></svg><div><div class="row-name">Vitrine de produtos</div><div class="row-meta">Bloco · Visível</div></div></div>
+            <div class="row-r"><span class="tag">Ativo</span><span class="grip">⠿</span></div>
+          </div>
+          <div class="row off">
+            <div class="row-l"><svg class="i"><use href="#i-chat-circle"/></svg><div><div class="row-name">Depoimentos</div><div class="row-meta">Bloco · Oculto</div></div></div>
+            <div class="row-r"><span class="tag">Oculto</span><span class="grip">⠿</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 JÁ EM PRODUÇÃO -->
+  <section class="proof">
+    <div class="wrap-wide">
+      <div class="spec-head" data-reveal>
+        <span class="num">02</span>
+        <span class="ttl">Já em produção</span>
+        <span class="aside">Prova de campo</span>
+      </div>
+      <div class="proof-grid">
+        <div class="kpi" data-reveal><span>Lojas ativas</span><strong>2</strong></div>
+        <div class="kpi" data-reveal data-reveal-delay="150"><span>Plataformas</span><strong class="kpi-text">VTEX IO + Nuvemshop</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- O QUE VEM JUNTO -->
+  <section class="features" id="recursos">
+    <div class="wrap">
+      <div class="intro" data-reveal>
+        <div class="eyebrow">O que vem junto</div>
+        <h2 class="h2">Cada bloco já nasce pronto pra o que importa.</h2>
+      </div>
+      <div class="feat-grid" data-reveal>
+        <div class="feat"><svg class="i"><use href="#i-magnifying-glass"/></svg><h3>SEO nativo</h3><p>Markup estruturado em cada bloco. Sua loja ranqueia sem configuração extra.</p></div>
+        <div class="feat"><svg class="i"><use href="#i-sparkle"/></svg><h3>GEO ready</h3><p>Estrutura preparada pra respostas em IA generativa e buscas conversacionais.</p></div>
+        <div class="feat"><svg class="i"><use href="#i-palette"/></svg><h3>Design tokens</h3><p>Cores, espaçamentos e tipografia controlados por variável — não na mão.</p></div>
+        <div class="feat"><svg class="i"><use href="#i-arrows-clockwise"/></svg><h3>Evolução contínua</h3><p>A mensalidade não é licença de acesso. É garantia de que o sistema cresce com a sua loja.</p></div>
+        <div class="feat"><svg class="i"><use href="#i-shield-check"/></svg><h3>Arquitetura protegida</h3><p>A lógica do orquestrador fica com a Dup. Você tem tudo que precisa pra operar — e nós mantemos o que garante a qualidade.</p></div>
+        <div class="feat"><svg class="i"><use href="#i-stack-plus"/></svg><h3>Catálogo em expansão</h3><p>Novos blocos chegam com o plano. Você não precisa pedir — eles aparecem disponíveis.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 COMO FUNCIONA -->
+  <section class="how" id="como-funciona">
+    <div class="wrap-wide">
+      <div class="spec-head" data-reveal>
+        <span class="num">03</span>
+        <span class="ttl">Como funciona</span>
+        <span class="aside">Três passos. Depois disso, é só operar.</span>
+      </div>
+      <div class="step" data-reveal>
+        <span class="step-n">01</span>
+        <h3>A Dup instala</h3>
+        <p>Uma vez. Na sua loja VTEX IO ou Nuvemshop. Você não precisa entender o que acontece por baixo — mas se quiser, a gente explica.</p>
+      </div>
+      <div class="step" data-reveal data-reveal-delay="120">
+        <span class="step-n">02</span>
+        <h3>Catálogo disponível</h3>
+        <p>Blocos prontos aparecem no Site Editor da VTEX ou no painel do SWTCHR na Nuvemshop. Banners, vitrines, editoriais, páginas de produto — cada um configurável do jeito que faz sentido pra sua loja.</p>
+      </div>
+      <div class="step" data-reveal data-reveal-delay="240">
+        <span class="step-n">03</span>
+        <h3>Você opera</h3>
+        <p>Sem depender de ninguém. Sem SLA. A Dup continua disponível pra evoluir o sistema — mas o dia a dia é seu.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="cta" id="contato">
+    <div class="wrap">
+      <div class="cta-visual" data-reveal>
+        <span class="bracket tl"></span>
+        <span class="bracket br"></span>
+        <img class="cta-astro" src="assets/astronauta.webp" alt="" width="1600" height="891" loading="lazy">
+      </div>
+      <div data-reveal data-reveal-delay="120">
+        <h2>Pronto pra operar sua loja sem depender de ninguém?</h2>
+        <p class="cta-lead">A Dup tem agenda limitada e atende lojas selecionadas. Se fizer sentido pros dois lados, a gente constrói junto.</p>
+        <form class="cta-form" id="form-contato" action="https://wa.me/5511973558096" method="get" target="_blank">
+          <input type="text" name="nome" placeholder="Nome" autocomplete="name" required aria-label="Nome">
+          <input type="text" name="loja" placeholder="Loja ou site (opcional)" autocomplete="organization" aria-label="Loja ou site">
+          <button class="btn btn-blue" type="submit">Quero agendar uma conversa <svg class="i"><use href="#i-arrow-right"/></svg></button>
+        </form>
+        <p class="cta-note">Abre o WhatsApp com a mensagem pronta. Sem compromisso. Sem pitch.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="brand">
+    <img src="assets/logo-swtchr-white.svg" alt="SWTCHR" width="125" height="15">
+    <span>by dup.agency</span>
+  </div>
+  <div class="footer-r">
+    <a href="#">Política de privacidade</a>
+    <span>© 2026</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    if (!('IntersectionObserver' in window)) return;
+    root.classList.add('js');
+
+    var reveals = document.querySelectorAll('[data-reveal]');
+    var ro = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.style.transitionDelay = (e.target.getAttribute('data-reveal-delay') || '0') + 'ms';
+        e.target.classList.add('is-in');
+        ro.unobserve(e.target);
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(function (el) { ro.observe(el); });
+
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var co = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        co.unobserve(e.target);
+        if (!reduce) animateCounter(e.target);
+      });
+    }, { threshold: 0.6 });
+    document.querySelectorAll('[data-counter]').forEach(function (el) { co.observe(el); });
+
+    function animateCounter(el) {
+      var target = parseFloat(el.getAttribute('data-counter')) || 0;
+      var prefix = el.getAttribute('data-counter-prefix') || '';
+      var suffix = el.getAttribute('data-counter-suffix') || '';
+      var start = performance.now();
+      function tick(now) {
+        var p = Math.min(1, (now - start) / 1500);
+        el.textContent = prefix + Math.round(target * (1 - Math.pow(1 - p, 3))) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
       }
-
-      function initCapture() {
-        canvas        = document.createElement('canvas');
-        ctx           = canvas.getContext('2d');
-        canvas.width  = video.videoWidth  || 560;
-        canvas.height = video.videoHeight || 900;
-
-        var busy = false;
-
-        function grabFrame() {
-          if (busy) return;
-          busy = true;
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          frames.push(canvas.toDataURL('image/jpeg', 0.85));
-          busy = false;
-        }
-
-        function onTimeUpdate() {
-          var ratio    = video.currentTime / video.duration;
-          var expected = Math.floor(ratio * FRAME_COUNT);
-          while (frames.length < expected) grabFrame();
-          if (frames.length >= FRAME_COUNT) {
-            video.removeEventListener('timeupdate', onTimeUpdate);
-            done();
-          }
-        }
-
-        video.addEventListener('timeupdate', onTimeUpdate);
-        video.addEventListener('ended', function () {
-          while (frames.length < FRAME_COUNT) grabFrame();
-          done();
-        }, { once: true });
-
-        video.currentTime = 0;
-        video.play().catch(function () {});
-      }
-
-      function done() {
-        video.pause();
-        video.style.display = 'none';
-        frameImg.src = frames[Math.floor(frames.length / 2)];
-        frameImg.style.display = 'block';
-        document.getElementById('em-loader').style.display = 'none';
-
-        if (isTouchDevice()) {
-          pingPong();
-        } else {
-          mouseScrub();
-        }
-      }
-
-      function mouseScrub() {
-        var N = frames.length;
-        document.addEventListener('mousemove', function (e) {
-          var ratio = Math.max(0, Math.min(1, e.clientX / window.innerWidth));
-          frameImg.src = frames[Math.round(ratio * (N - 1))];
-        });
-      }
-
-      function pingPong() {
-        var N      = frames.length;
-        var pos    = N / 2;
-        var dir    = 1;
-        var lastTs = null;
-        var SPEED  = 7.5;
-
-        function tick(ts) {
-          requestAnimationFrame(tick);
-          if (lastTs === null) { lastTs = ts; return; }
-          var delta = Math.min((ts - lastTs) / 1000, 0.05);
-          lastTs = ts;
-
-          pos += dir * SPEED * delta;
-          if (pos >= N - 1) { pos = N - 1; dir = -1; }
-          else if (pos <= 0) { pos = 0;    dir =  1; }
-
-          frameImg.src = frames[Math.round(pos)];
-        }
-
-        requestAnimationFrame(tick);
-      }
-
-      if (video.readyState >= 1 && video.duration) {
-        initCapture();
-      } else {
-        video.addEventListener('loadedmetadata', initCapture, { once: true });
-      }
-    })();
-  </script>
+      requestAnimationFrame(tick);
+    }
+  })();
+</script>
+<script>
+  (function () {
+    var form = document.getElementById('form-contato');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var nome = form.nome.value.trim();
+      var loja = form.loja.value.trim();
+      var msg = 'Oi! Sou ' + nome + (loja ? ', da ' + loja : '') + '. Vim pelo site do SWTCHR e quero agendar uma conversa.';
+      var url = form.action + '?text=' + encodeURIComponent(msg);
+      var win = window.open(url, '_blank', 'noopener');
+      if (!win) window.location.href = url;
+    });
+  })();
+</script>
 </body>
 </html>

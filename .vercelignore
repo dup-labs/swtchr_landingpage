@@ -1,0 +1,5 @@
+# A Vercel serve a raiz deste repo. Só a landing (index.html + assets/) deve ir ao ar.
+nuvemshop/
+export/
+DESIGN_SYSTEM.md
+.data/
