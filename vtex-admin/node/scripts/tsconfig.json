@@ -1,0 +1,18 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../.smoke",
+    "rootDir": "..",
+    "noEmit": false,
+    "sourceMap": false,
+    "lib": [
+      "es2022"
+    ]
+  },
+  "include": [
+    "./smoke.ts"
+  ],
+  "exclude": [
+    "../node_modules"
+  ]
+}

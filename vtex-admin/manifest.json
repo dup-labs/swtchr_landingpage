@@ -1,0 +1,47 @@
+{
+  "vendor": "dupagencypartnerbr",
+  "name": "swtchr-admin",
+  "version": "0.3.1",
+  "title": "swtchr",
+  "description": "Painel swtchr: edi\u00e7\u00e3o visual das p\u00e1ginas da loja FastStore (CMS Content Platform).",
+  "builders": {
+    "admin": "0.x",
+    "react": "3.x",
+    "messages": "1.x",
+    "node": "7.x"
+  },
+  "dependencies": {
+    "vtex.styleguide": "9.x"
+  },
+  "policies": [
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "api.vtexcommercestable.com.br",
+        "path": "/api/content-platform/*"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "content-platform-ui.vercel.admin.vtex.com",
+        "path": "/api/proxy/*"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "{{account}}.vtexcommercestable.com.br",
+        "path": "/api/*"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "{{account}}.vtexcommercestable.com.br",
+        "path": "/api/content-platform/*"
+      }
+    }
+  ],
+  "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
+}

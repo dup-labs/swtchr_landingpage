@@ -1,0 +1,15 @@
+{
+  "name": "swtchr-admin-node",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@vtex/api": "^7.0.0",
+    "co-body": "^6.1.0"
+  },
+  "devDependencies": {
+    "@types/co-body": "^6.1.0",
+    "@types/node": "^20.0.0",
+    "@vtex/tsconfig": "^0.5.0",
+    "typescript": "5.5.3"
+  }
+}

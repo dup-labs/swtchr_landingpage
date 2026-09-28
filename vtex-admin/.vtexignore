@@ -1,0 +1,4 @@
+node_modules
+*.log
+node/scripts
+node/.smoke

@@ -1,0 +1,17 @@
+{
+  "name": "swtchr-admin-react",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2"
+  },
+  "devDependencies": {
+    "@types/react": "^16.14.0",
+    "@types/react-dom": "^16.9.0",
+    "typescript": "3.9.7",
+    "@vtex/tsconfig": "^0.5.0",
+    "@types/node": "14.14.37"
+  }
+}
