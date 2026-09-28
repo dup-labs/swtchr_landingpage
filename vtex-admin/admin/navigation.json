@@ -1,0 +1,12 @@
+{
+  "section": "storeFront",
+  "titleId": "admin/swtchr.navigation.label",
+  "adminVersion": 4,
+  "subSection": "swtchr",
+  "subSectionItems": [
+    {
+      "labelId": "admin/swtchr.navigation.editor",
+      "path": "/admin/swtchr"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "memory": 256,
+  "ttl": 10,
+  "timeout": 30,
+  "minReplicas": 1,
+  "maxReplicas": 4,
+  "routes": {
+    "health": { "path": "/_v/swtchr/health", "public": true },
+    "api": { "path": "/_v/swtchr/api/*path", "public": true }
+  }
+}

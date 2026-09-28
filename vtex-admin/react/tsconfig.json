@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "noEmitOnError": false,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "es2019"
+    ],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "es2017",
+    "jsx": "react",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "types": [
+      "react",
+      "react-dom"
+    ]
+  },
+  "include": [
+    "./**/*.tsx",
+    "./**/*.ts"
+  ],
+  "typeAcquisition": {
+    "enable": false
+  }
+}

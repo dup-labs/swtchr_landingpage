@@ -1,0 +1,24 @@
+{
+  "extends": "@vtex/tsconfig",
+  "compilerOptions": {
+    "noEmitOnError": false,
+    "lib": [
+      "es2019"
+    ],
+    "module": "commonjs",
+    "target": "es2019",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "./**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "scripts",
+    ".smoke"
+  ]
+}

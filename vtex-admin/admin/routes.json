@@ -1,0 +1,6 @@
+{
+  "admin.app.swtchr": {
+    "component": "SwtchrAdmin",
+    "path": "/admin/app/swtchr"
+  }
+}
